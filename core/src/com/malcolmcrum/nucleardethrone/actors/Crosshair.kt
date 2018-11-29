@@ -6,28 +6,30 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.malcolmcrum.nucleardethrone.Log
+import com.malcolmcrum.nucleardethrone.drawCentered
+import com.malcolmcrum.nucleardethrone.setBoundsCentered
 
 class Crosshair : Actor() {
     val log = Log(Crosshair::class.java)
     val texture = Texture("crosshair.png")
 
     init {
-        setBounds(0f, 0f, 1024f, 768f)
+        setPosition(100f, 100f)
+        setBoundsCentered(100f, 100f, texture.width.toFloat(), texture.height.toFloat())
         addListener(object: ClickListener() {
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
-                TODO()
             }
 
             override fun mouseMoved(event: InputEvent?, x: Float, y: Float): Boolean {
                 log.info("mouse moved: $x, $y")
-                setX(x)
-                setY(y)
+                moveBy(x, y)
+                //setBoundsCentered(x, y, texture.width.toFloat(), texture.height.toFloat())
                 return true
             }
         })
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
-        batch.draw(texture, x, y)
+        batch.drawCentered(texture, x, y)
     }
 }
