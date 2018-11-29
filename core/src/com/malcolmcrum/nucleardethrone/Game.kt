@@ -5,14 +5,12 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.graphics.GL20
 import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.maps.MapRenderer
-import com.badlogic.gdx.maps.tiled.TiledMap
+import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.badlogic.gdx.utils.viewport.FitViewport
 import com.malcolmcrum.nucleardethrone.actors.Crosshair
 import com.malcolmcrum.nucleardethrone.actors.Player
-import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
-
 
 
 class Game : ApplicationAdapter() {
@@ -40,7 +38,7 @@ class Game : ApplicationAdapter() {
     override fun render() {
         camera.update()
         getInputs(viewport).forEach { input ->
-            player.handleInput(input)
+            player.handleInput(input) { x, y -> checkCollision(x, y) }
         }
         stage.isDebugAll = true
         Gdx.gl.glClearColor(1f, 0f, 0f, 1f)
@@ -49,6 +47,12 @@ class Game : ApplicationAdapter() {
         stage.draw()
         mapRenderer.render()
 
+    }
+
+    private fun checkCollision(x: Float, y: Float): Boolean {
+        val layer: TiledMapTileLayer = map.map.layers[0] as TiledMapTileLayer
+        val cell: TiledMapTileLayer.Cell? = layer.getCell(x.toInt(), y.toInt())
+        return cell?.tile?.properties?.get(BLOCKING) as? Boolean ?: false
     }
 
     override fun dispose() {

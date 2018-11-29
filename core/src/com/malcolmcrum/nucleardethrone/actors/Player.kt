@@ -2,8 +2,10 @@ package com.malcolmcrum.nucleardethrone.actors
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.maps.MapObject
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.malcolmcrum.nucleardethrone.*
+import java.util.function.BiFunction
 
 class Player(val crosshair: Crosshair) : Actor() {
     val log = Log(Player::class.java)
@@ -18,11 +20,17 @@ class Player(val crosshair: Crosshair) : Actor() {
         crosshair.draw(batch, parentAlpha)
     }
 
-    fun handleInput(input: Inputs) {
+    fun handleInput(input: Inputs, collisionCheck: (Float, Float) -> Boolean) {
+        val oldX = x
+        val oldY = y
         when (input) {
             is MoveX -> this.x += input.x
             is MoveY -> this.y += input.y
             is Aim -> crosshair.setPosition(input.x, input.y)
+        }
+        if (collisionCheck.invoke(x, y)) {
+            x = oldX
+            y = oldY
         }
     }
 }
