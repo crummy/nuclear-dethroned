@@ -3,7 +3,6 @@ package com.malcolmcrum.nucleardethrone
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input.Keys.*
 import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.utils.viewport.FitViewport
 import com.badlogic.gdx.utils.viewport.Viewport
 
 sealed class Inputs
