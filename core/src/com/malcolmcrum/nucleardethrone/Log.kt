@@ -1,12 +1,10 @@
 package com.malcolmcrum.nucleardethrone
 
 import com.badlogic.gdx.Gdx
-import kotlin.reflect.KClass
 
 
-
-class Log(private val kClass: KClass<Any>) {
+class Log(private val clazz: Class<*>) {
     fun info(message: String) {
-        Gdx.app.log(kClass.simpleName, message)
+        Gdx.app.log(clazz.simpleName, message)
     }
 }
