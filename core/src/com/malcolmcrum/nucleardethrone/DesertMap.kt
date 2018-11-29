@@ -22,7 +22,7 @@ class DesertMap {
         val tileLayer = TiledMapTileLayer(64, 64, 8, 8)
         (0..64).forEach { x ->
             (0..64).forEach { y ->
-                if (Random.nextInt(10) < 3) {
+                if (x == 0 || x == 64 || y == 0 || y == 64) {
                     tileLayer.setCell(x, y, cell)
                 }
             }
