@@ -31,7 +31,7 @@ class Game : ApplicationAdapter() {
         stage.addActor(player)
         stage.addActor(crosshair)
         stage.addActor(camera)
-        mapRenderer = OrthogonalTiledMapRenderer(map.map, 1/4f)
+        mapRenderer = OrthogonalTiledMapRenderer(map.map)
         mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
     }
 

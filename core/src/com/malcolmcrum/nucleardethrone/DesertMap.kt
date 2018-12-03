@@ -18,10 +18,10 @@ class DesertMap {
     init {
         blockingTile.properties.put(BLOCKING, true)
         cell.tile = blockingTile
-        val tileLayer = TiledMapTileLayer(64, 64, 8, 8)
-        (0..64).forEach { x ->
-            (0..64).forEach { y ->
-                if (x == 0 || x == 64 || y == 0 || y == 64) {
+        val tileLayer = TiledMapTileLayer(32, 32, 8, 8)
+        (0..32).forEach { x ->
+            (0..32).forEach { y ->
+                if (x == 0 || x == 31 || y == 0 || y == 31) {
                     tileLayer.setCell(x, y, cell)
                 }
             }
