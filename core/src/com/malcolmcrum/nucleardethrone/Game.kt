@@ -10,36 +10,33 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.badlogic.gdx.utils.viewport.FitViewport
+import com.malcolmcrum.nucleardethrone.actors.Camera
 import com.malcolmcrum.nucleardethrone.actors.Crosshair
 import com.malcolmcrum.nucleardethrone.actors.Player
 
 
 class Game : ApplicationAdapter() {
-    lateinit var camera: OrthographicCamera
     lateinit var stage: Stage
     lateinit var player: Player
-    val viewport = FitViewport(160f, 100f)
+    lateinit var camera: Camera
     lateinit var map: DesertMap
     lateinit var mapRenderer: MapRenderer
 
     override fun create() {
         map = DesertMap()
-        camera = OrthographicCamera()
-        camera.setToOrtho(false, 1024f, 768f)
-        stage = Stage(viewport)
         val crosshair = Crosshair()
         player = Player(crosshair)
+        camera = Camera(player, crosshair)
+        stage = Stage(camera.viewport)
         stage.addActor(player)
         stage.addActor(crosshair)
-        camera.position.set(camera.viewportWidth/2,camera.viewportHeight/2,0f)
-        mapRenderer = OrthogonalTiledMapRenderer(map.map)
-        mapRenderer.setView(viewport.camera as OrthographicCamera?)
+        stage.addActor(camera)
+        mapRenderer = OrthogonalTiledMapRenderer(map.map, 1/4f)
+        mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
     }
 
     override fun render() {
-        camera.update()
-        getInputs(viewport).forEach { input ->
+        getInputs(camera.viewport).forEach { input ->
             player.handleInput(input) { bounds, velocity -> checkCollision(bounds, velocity) }
         }
         stage.isDebugAll = true
@@ -47,8 +44,9 @@ class Game : ApplicationAdapter() {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         stage.act(Gdx.graphics.deltaTime)
         stage.draw()
+        mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
         mapRenderer.render()
-
+        camera.update()
     }
 
     private fun checkCollision(inBounds: Rectangle, velocity: Vector2): Boolean {
