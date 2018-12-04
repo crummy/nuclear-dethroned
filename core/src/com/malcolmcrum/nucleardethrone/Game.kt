@@ -64,26 +64,27 @@ class Game : ApplicationAdapter() {
         return Vector2(x, y)
     }
 
+    // TODO: figure out off-by-one error here
     fun collidesEast(): Boolean {
-        return (0.1f..(player.height) step TILE_SIZE / 2f).any { step ->
+        return (1f..(player.height) step TILE_SIZE / 2f).any { step ->
             collides(player.x + player.width, player.y + step)
         }
     }
 
     fun collidesWest(): Boolean {
-        return (0.1f..(player.height) step TILE_SIZE / 2f).any { step ->
+        return (1f..(player.height) step TILE_SIZE / 2f).any { step ->
             collides(player.x, player.y + step)
         }
     }
 
     fun collidesNorth(): Boolean {
-        return (0.1f..(player.width) step TILE_SIZE / 2f).any { step ->
+        return (1f..(player.width) step TILE_SIZE / 2f).any { step ->
             collides(player.x + step, player.y + player.height)
         }
     }
 
     fun collidesSouth(): Boolean {
-        return (0.1f..(player.width) step TILE_SIZE / 2f).any { step ->
+        return (1f..(player.width) step TILE_SIZE / 2f).any { step ->
             collides(player.x + step, player.y)
         }
     }
