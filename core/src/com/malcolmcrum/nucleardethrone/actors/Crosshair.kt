@@ -6,8 +6,6 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.malcolmcrum.nucleardethrone.Log
-import com.malcolmcrum.nucleardethrone.drawCentered
-import com.malcolmcrum.nucleardethrone.setBoundsCentered
 
 class Crosshair : Actor() {
     val log = Log(Crosshair::class.java)
