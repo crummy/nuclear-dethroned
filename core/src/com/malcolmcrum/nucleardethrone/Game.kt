@@ -7,7 +7,6 @@ import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.maps.MapRenderer
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
-import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
 import com.malcolmcrum.nucleardethrone.actors.Camera
@@ -37,7 +36,7 @@ class Game : ApplicationAdapter() {
 
     override fun render() {
         getInputs(camera.viewport).forEach { input ->
-            player.handleInput(input) { bounds, velocity -> checkCollision(bounds, velocity) }
+            player.handleInput(input, this::checkCollision)
         }
         stage.isDebugAll = true
         Gdx.gl.glClearColor(1f, 0f, 0f, 1f)
@@ -49,48 +48,47 @@ class Game : ApplicationAdapter() {
         camera.update()
     }
 
-    private fun checkCollision(inBounds: Rectangle, velocity: Vector2): Boolean {
-        val bounds = Rectangle(inBounds.x / 8, inBounds.y / 8, 1f, 1f)
-        val layer: TiledMapTileLayer = map.map.layers[0] as TiledMapTileLayer
+    private fun checkCollision(velocity: Vector2): Boolean {
         if (velocity.x > 0) {
-            val lowerCell: TiledMapTileLayer.Cell? = layer.getCell((bounds.x + bounds.width).toInt(), bounds.y.toInt())
-            val upperCell: TiledMapTileLayer.Cell? = layer.getCell((bounds.x + bounds.width).toInt(), (bounds.y + bounds.height).toInt())
-            if (lowerCell?.tile?.properties?.get(BLOCKING) as? Boolean == true) {
-                return true
-            }
-            if (upperCell?.tile?.properties?.get(BLOCKING) as? Boolean == true) {
-                return true
-            }
+            if (collidesEast()) return true
         } else if (velocity.x < 0) {
-            val lowerCell: TiledMapTileLayer.Cell? = layer.getCell(bounds.x.toInt(), bounds.y.toInt())
-            val upperCell: TiledMapTileLayer.Cell? = layer.getCell(bounds.x.toInt(), (bounds.y + bounds.height).toInt())
-            if (lowerCell?.tile?.properties?.get(BLOCKING) as? Boolean == true) {
-                return true
-            }
-            if (upperCell?.tile?.properties?.get(BLOCKING) as? Boolean == true) {
-                return true
-            }
+            if (collidesWest()) return true
         }
         if (velocity.y > 0) {
-            val leftCell: TiledMapTileLayer.Cell? = layer.getCell((bounds.x + bounds.width).toInt(), (bounds.y + bounds.height).toInt())
-            val rightCell: TiledMapTileLayer.Cell? = layer.getCell(bounds.x.toInt(), (bounds.y + bounds.height).toInt())
-            if (leftCell?.tile?.properties?.get(BLOCKING) as? Boolean == true) {
-                return true
-            }
-            if (rightCell?.tile?.properties?.get(BLOCKING) as? Boolean == true) {
-                return true
-            }
+            if (collidesNorth()) return true
         } else if (velocity.y < 0) {
-            val leftCell: TiledMapTileLayer.Cell? = layer.getCell((bounds.x + bounds.width).toInt(), bounds.y.toInt())
-            val rightCell: TiledMapTileLayer.Cell? = layer.getCell(bounds.x.toInt(), bounds.y.toInt())
-            if (leftCell?.tile?.properties?.get(BLOCKING) as? Boolean == true) {
-                return true
-            }
-            if (rightCell?.tile?.properties?.get(BLOCKING) as? Boolean == true) {
-                return true
-            }
+            if (collidesSouth()) return true
         }
         return false
+    }
+
+    fun collidesEast(): Boolean {
+        return (0f..player.height step TILE_SIZE / 2f).any { step ->
+            collides(player.x + player.width, player.y + step)
+        }
+    }
+
+    fun collidesWest(): Boolean {
+        return (0f..player.height step TILE_SIZE / 2f).any { step ->
+            collides(player.x, player.y + step)
+        }
+    }
+
+    fun collidesNorth(): Boolean {
+        return (0f..player.width step TILE_SIZE / 2f).any { step ->
+            collides(player.x + step, player.y + player.height)
+        }
+    }
+
+    fun collidesSouth(): Boolean {
+        return (0f..player.width step TILE_SIZE / 2f).any { step ->
+            collides(player.x + step, player.y)
+        }
+    }
+
+    private fun collides(x: Float, y: Float): Boolean {
+        val layer: TiledMapTileLayer = map.map.layers[0] as TiledMapTileLayer
+        return layer.getCell((x / TILE_SIZE).toInt(), (y / TILE_SIZE).toInt())?.tile?.properties?.get(BLOCKING) as? Boolean == true
     }
 
     override fun dispose() {

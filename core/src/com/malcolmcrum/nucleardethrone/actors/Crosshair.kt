@@ -15,7 +15,7 @@ class Crosshair : Actor() {
 
     init {
         setPosition(100f, 100f)
-        setBoundsCentered(100f, 100f, texture.width.toFloat(), texture.height.toFloat())
+        setBounds(100f, 100f, texture.width.toFloat(), texture.height.toFloat())
         addListener(object: ClickListener() {
             override fun clicked(event: InputEvent?, x: Float, y: Float) {
             }
@@ -30,6 +30,6 @@ class Crosshair : Actor() {
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
-        batch.drawCentered(texture, x, y)
+        batch.draw(texture, x, y)
     }
 }

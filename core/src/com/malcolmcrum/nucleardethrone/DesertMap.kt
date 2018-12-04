@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 
 const val BLOCKING: String = "BLOCKING"
+const val TILE_SIZE = 8f
 
 class DesertMap {
     val map: TiledMap = TiledMap()
