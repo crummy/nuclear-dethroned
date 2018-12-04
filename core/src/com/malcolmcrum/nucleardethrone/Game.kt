@@ -39,12 +39,13 @@ class Game : ApplicationAdapter() {
             player.handleInput(input, this::collisionModifier)
         }
         stage.isDebugAll = true
-        Gdx.gl.glClearColor(1f, 0f, 0f, 1f)
+        Gdx.gl.glClearColor(170/255f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         stage.act(Gdx.graphics.deltaTime)
-        stage.draw()
         mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
-        mapRenderer.render()
+        mapRenderer.render(listOf(1).toIntArray()) // render walls
+        stage.draw() // render player, etc
+        mapRenderer.render(listOf(0).toIntArray()) // render blocking tiles
         camera.update()
     }
 
