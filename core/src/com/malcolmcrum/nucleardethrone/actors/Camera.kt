@@ -8,13 +8,11 @@ import com.malcolmcrum.nucleardethrone.Log
 val log = Log(Camera::class.java)
 
 class Camera(private val player: Player, private val crosshair: Crosshair) : Actor() {
-    val position = Vector2()
     val viewport = FitViewport(160f, 100f)
 
     fun update() {
-        position.lerp(Vector2(player.x, player.y), 0.05f)
+        val position = Vector2(player.x, player.y).lerp(Vector2(crosshair.x, crosshair.y), 0.25f)
         viewport.camera.position.set(position.x, position.y, 0f)
         viewport.camera.update()
-        log.info("camera: ${viewport.camera.position}")
     }
 }
