@@ -8,6 +8,7 @@ import com.badlogic.gdx.maps.MapRenderer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
+import com.malcolmcrum.nucleardethrone.actors.Bandit
 import com.malcolmcrum.nucleardethrone.actors.Camera
 import com.malcolmcrum.nucleardethrone.actors.Crosshair
 import com.malcolmcrum.nucleardethrone.actors.Player
@@ -19,6 +20,7 @@ class Game : ApplicationAdapter() {
     lateinit var camera: Camera
     lateinit var map: DesertMap
     lateinit var mapRenderer: MapRenderer
+    val enemies = mutableListOf<Bandit>()
 
     override fun create() {
         map = DesertMap()
@@ -29,6 +31,10 @@ class Game : ApplicationAdapter() {
         stage.addActor(crosshair)
         stage.addActor(player)
         stage.addActor(camera)
+        enemies.add(Bandit(this::collides))
+        enemies.add(Bandit(this::collides))
+        enemies.add(Bandit(this::collides))
+        enemies.forEach(stage::addActor)
         mapRenderer = OrthogonalTiledMapRenderer(map.map)
         mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
     }
@@ -37,6 +43,7 @@ class Game : ApplicationAdapter() {
         getInputs(camera.viewport).forEach { input ->
             player.handleInput(input, this::collisionModifier)
         }
+        enemies.forEach(Bandit::update)
         stage.isDebugAll = true
         Gdx.gl.glClearColor(170/255f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)

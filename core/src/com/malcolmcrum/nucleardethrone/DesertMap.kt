@@ -31,7 +31,7 @@ class DesertMap {
 
         (0..32).forEach { x ->
             (0..32).forEach { y ->
-                if (x == 0 || x == 31 || y == 0 || y == 31 || Random.nextInt(10) < 2) {
+                if (x == 0 || x == 31 || y == 0 || y == 31 || Random.nextInt(10) < 1) {
                     blockingLayer.setCell(x, y, blockingCell)
                     wallLayer.setCell(x, y, wallCell)
                 }
@@ -44,8 +44,6 @@ class DesertMap {
     fun tileAt(x: Float, y: Float): TiledMapTile? {
         return blockingLayer.getCell((x / TILE_SIZE).toInt(), (y / TILE_SIZE).toInt())?.tile
     }
-
-
 }
 
 fun TiledMapTile?.isBlocking(): Boolean {
