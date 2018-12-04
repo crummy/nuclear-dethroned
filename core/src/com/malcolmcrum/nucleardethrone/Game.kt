@@ -36,7 +36,7 @@ class Game : ApplicationAdapter() {
 
     override fun render() {
         getInputs(camera.viewport).forEach { input ->
-            player.handleInput(input, this::checkCollision)
+            player.handleInput(input, this::collisionModifier)
         }
         stage.isDebugAll = true
         Gdx.gl.glClearColor(1f, 0f, 0f, 1f)
@@ -48,47 +48,48 @@ class Game : ApplicationAdapter() {
         camera.update()
     }
 
-    private fun checkCollision(velocity: Vector2): Boolean {
+    private fun collisionModifier(velocity: Vector2): Vector2 {
+        var x = 1f
         if (velocity.x > 0) {
-            if (collidesEast()) return true
+            if (collidesEast()) x = 0f
         } else if (velocity.x < 0) {
-            if (collidesWest()) return true
+            if (collidesWest()) x = 0f
         }
+        var y = 1f
         if (velocity.y > 0) {
-            if (collidesNorth()) return true
+            if (collidesNorth()) y = 0f
         } else if (velocity.y < 0) {
-            if (collidesSouth()) return true
+            if (collidesSouth()) y = 0f
         }
-        return false
+        return Vector2(x, y)
     }
 
     fun collidesEast(): Boolean {
-        return (0f..player.height step TILE_SIZE / 2f).any { step ->
+        return (0.1f..(player.height) step TILE_SIZE / 2f).any { step ->
             collides(player.x + player.width, player.y + step)
         }
     }
 
     fun collidesWest(): Boolean {
-        return (0f..player.height step TILE_SIZE / 2f).any { step ->
+        return (0.1f..(player.height) step TILE_SIZE / 2f).any { step ->
             collides(player.x, player.y + step)
         }
     }
 
     fun collidesNorth(): Boolean {
-        return (0f..player.width step TILE_SIZE / 2f).any { step ->
+        return (0.1f..(player.width) step TILE_SIZE / 2f).any { step ->
             collides(player.x + step, player.y + player.height)
         }
     }
 
     fun collidesSouth(): Boolean {
-        return (0f..player.width step TILE_SIZE / 2f).any { step ->
+        return (0.1f..(player.width) step TILE_SIZE / 2f).any { step ->
             collides(player.x + step, player.y)
         }
     }
 
     private fun collides(x: Float, y: Float): Boolean {
-        val layer: TiledMapTileLayer = map.map.layers[0] as TiledMapTileLayer
-        return layer.getCell((x / TILE_SIZE).toInt(), (y / TILE_SIZE).toInt())?.tile?.properties?.get(BLOCKING) as? Boolean == true
+        return map.tileAt(x, y).isBlocking()
     }
 
     override fun dispose() {

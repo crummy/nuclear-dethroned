@@ -20,18 +20,15 @@ class Player(val crosshair: Crosshair) : Actor() {
         crosshair.draw(batch, parentAlpha)
     }
 
-    fun handleInput(input: Inputs, collisionCheck: (Vector2) -> Boolean) {
+    fun handleInput(input: Inputs, collisionCheck: (Vector2) -> Vector2) {
         val velocity = Vector2()
         when (input) {
             is MoveX -> velocity.x = input.x
             is MoveY -> velocity.y = input.y
             is Aim -> crosshair.setPosition(input.x, input.y)
         }
-        if (collisionCheck.invoke(velocity)) {
-            // collided. do nothing
-        } else {
-            this.x += velocity.x
-            this.y += velocity.y
-        }
+        val collisionModifier = collisionCheck.invoke(velocity)
+        this.x += velocity.x * collisionModifier.x
+        this.y += velocity.y * collisionModifier.y
     }
 }
