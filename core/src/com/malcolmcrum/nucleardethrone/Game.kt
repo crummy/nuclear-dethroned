@@ -37,6 +37,7 @@ class Game : ApplicationAdapter() {
         enemies.forEach(stage::addActor)
         mapRenderer = OrthogonalTiledMapRenderer(map.map)
         mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
+        Gdx.input.isCursorCatched = true
     }
 
     override fun render() {
@@ -44,7 +45,6 @@ class Game : ApplicationAdapter() {
             player.handleInput(input, this::collisionModifier)
         }
         enemies.forEach(Bandit::update)
-        stage.isDebugAll = true
         Gdx.gl.glClearColor(170/255f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         stage.act(Gdx.graphics.deltaTime)
