@@ -47,6 +47,7 @@ class Game : ApplicationAdapter() {
         enemies.forEach(Bandit::update)
         Gdx.gl.glClearColor(170/255f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
+        stage.isDebugAll = true
         stage.act(Gdx.graphics.deltaTime)
         mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
         mapRenderer.render(listOf(1).toIntArray()) // render walls
