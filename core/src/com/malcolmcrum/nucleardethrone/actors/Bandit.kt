@@ -32,7 +32,7 @@ class Bandit(private val collisionCheck: (x: Float, y: Float) -> Boolean) : Acto
         if (nextAction is Moving) {
             val position = Vector2(x, y)
             val destination = Vector2(nextAction.x, nextAction.y)
-            val toDestination = destination.sub(position).scl(0.1f)
+            val toDestination = destination.sub(position).nor()
             x += toDestination.x
             y += toDestination.y
         }
