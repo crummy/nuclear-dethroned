@@ -12,9 +12,12 @@ import com.malcolmcrum.nucleardethrone.actors.Bandit
 import com.malcolmcrum.nucleardethrone.actors.Camera
 import com.malcolmcrum.nucleardethrone.actors.Crosshair
 import com.malcolmcrum.nucleardethrone.actors.Player
+import com.malcolmcrum.nucleardethrone.events.EventManager
 
+val EVENTS = EventManager()
 
 class Game : ApplicationAdapter() {
+    val inputHandler = InputHandler()
     lateinit var stage: Stage
     lateinit var player: Player
     lateinit var camera: Camera
@@ -25,7 +28,7 @@ class Game : ApplicationAdapter() {
     override fun create() {
         map = DesertMap()
         val crosshair = Crosshair()
-        player = Player(crosshair)
+        player = Player(this::collisionModifier)
         camera = Camera(player, crosshair)
         stage = Stage(camera.viewport)
         stage.addActor(crosshair)
@@ -41,9 +44,7 @@ class Game : ApplicationAdapter() {
     }
 
     override fun render() {
-        getInputs(camera.viewport).forEach { input ->
-            player.handleInput(input, this::collisionModifier)
-        }
+        inputHandler.handle(camera.viewport.camera)
         enemies.forEach(Bandit::update)
         Gdx.gl.glClearColor(170/255f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)

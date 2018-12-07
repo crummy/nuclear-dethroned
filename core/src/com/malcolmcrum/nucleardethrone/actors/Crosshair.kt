@@ -6,8 +6,10 @@ import com.badlogic.gdx.scenes.scene2d.Actor
 import com.badlogic.gdx.scenes.scene2d.InputEvent
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener
 import com.malcolmcrum.nucleardethrone.Log
+import com.malcolmcrum.nucleardethrone.events.EventListener
+import com.malcolmcrum.nucleardethrone.events.MouseAimed
 
-class Crosshair : Actor() {
+class Crosshair : EventListener<MouseAimed>, Actor() {
     val log = Log(Crosshair::class.java)
     val texture = Texture("crosshair.png")
 
@@ -28,5 +30,9 @@ class Crosshair : Actor() {
 
     override fun draw(batch: Batch, parentAlpha: Float) {
         batch.draw(texture, x - texture.height / 2f, y - texture.width / 2f)
+    }
+
+    override fun handle(event: MouseAimed) {
+        setPosition(event.x, event.y)
     }
 }

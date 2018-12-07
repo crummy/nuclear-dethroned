@@ -2,34 +2,43 @@ package com.malcolmcrum.nucleardethrone
 
 import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input.Keys.*
+import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.math.Vector3
-import com.badlogic.gdx.utils.viewport.Viewport
+import com.malcolmcrum.nucleardethrone.events.MouseAimed
+import com.malcolmcrum.nucleardethrone.events.MouseClicked
+import com.malcolmcrum.nucleardethrone.events.PlayerMoved
 
-sealed class Inputs
-data class MoveX(val x: Float) : Inputs()
-data class MoveY(val y: Float) : Inputs()
-data class Aim(val x: Float, val y: Float) : Inputs()
-data class Shoot(val ignored: Float) : Inputs()
+class InputHandler {
+    fun handle(camera: Camera) {
+        handleKeyboardInput()
+        handleMouseInput(camera)
+    }
 
-fun getInputs(camera: Viewport): Collection<Inputs> {
-    val inputs = HashSet<Inputs>()
-    if (Gdx.input.isKeyPressed(W)) {
-        inputs.add(MoveY(1f))
+    private fun handleKeyboardInput() {
+        var y = 0
+        if (Gdx.input.isKeyPressed(W)) {
+            y = 1
+        }
+        if (Gdx.input.isKeyPressed(S)) {
+            y = -1
+        }
+        var x = 0
+        if (Gdx.input.isKeyPressed(A)) {
+            x = -1
+        }
+        if (Gdx.input.isKeyPressed(D)) {
+            x = 1
+        }
+        EVENTS.notify(PlayerMoved(x, y))
     }
-    if (Gdx.input.isKeyPressed(S)) {
-        inputs.add(MoveY(-1f))
+
+    private fun handleMouseInput(camera: Camera) {
+        val aimPosition = Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f)
+        camera.unproject(aimPosition)
+        EVENTS.notify(MouseAimed(aimPosition.x, aimPosition.y))
+
+        if (Gdx.input.isKeyPressed(LEFT)) {
+            EVENTS.notify(MouseClicked(aimPosition.x, aimPosition.y))
+        }
     }
-    if (Gdx.input.isKeyPressed(A)) {
-        inputs.add(MoveX(-1f))
-    }
-    if (Gdx.input.isKeyPressed(D)) {
-        inputs.add(MoveX(1f))
-    }
-    val aimPosition = Vector3(Gdx.input.x.toFloat(), Gdx.input.y.toFloat(), 0f)
-    camera.unproject(aimPosition)
-    inputs.add(Aim(aimPosition.x, aimPosition.y))
-    if (Gdx.input.isKeyPressed(LEFT)) {
-        inputs.add(Shoot(0f))
-    }
-    return inputs
 }
