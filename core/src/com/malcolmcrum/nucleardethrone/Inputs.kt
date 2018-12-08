@@ -6,7 +6,7 @@ import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.math.Vector3
 import com.malcolmcrum.nucleardethrone.events.MouseAimed
 import com.malcolmcrum.nucleardethrone.events.MouseClicked
-import com.malcolmcrum.nucleardethrone.events.PlayerMoved
+import com.malcolmcrum.nucleardethrone.events.PlayerMovement
 
 class InputHandler {
     fun handle(camera: Camera) {
@@ -29,7 +29,7 @@ class InputHandler {
         if (Gdx.input.isKeyPressed(D)) {
             x = 1
         }
-        EVENTS.notify(PlayerMoved(x, y))
+        EVENTS.notify(PlayerMovement(x, y))
     }
 
     private fun handleMouseInput(camera: Camera) {

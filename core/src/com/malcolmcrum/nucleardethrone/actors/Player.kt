@@ -9,12 +9,13 @@ import com.malcolmcrum.nucleardethrone.EVENTS
 import com.malcolmcrum.nucleardethrone.Log
 import com.malcolmcrum.nucleardethrone.events.EventListener
 import com.malcolmcrum.nucleardethrone.events.MouseAimed
-import com.malcolmcrum.nucleardethrone.events.PlayerMoved
+import com.malcolmcrum.nucleardethrone.events.PlayerMovement
+import com.malcolmcrum.nucleardethrone.events.PlayerPositionUpdated
 import com.malcolmcrum.nucleardethrone.setBoundsCentered
 
-class Player(val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMoved>, Actor() {
+class Player(val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMovement>, Actor() {
 
-    val log = Log(Player::class.java)
+    val log = Log(Player::class)
     val texture = Texture("player.png")
     val weapon = Weapon(texture.width, texture.height)
 
@@ -28,11 +29,12 @@ class Player(val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMov
         weapon.draw(batch)
     }
 
-    override fun handle(event: PlayerMoved) {
+    override fun handle(event: PlayerMovement) {
         val velocity = Vector2(event.x.toFloat(), event.y.toFloat())
         val collisionModifier = collisionCheck.invoke(velocity)
-        this.x += velocity.x * collisionModifier.x
-        this.y += velocity.y * collisionModifier.y
+        x += velocity.x * collisionModifier.x
+        y += velocity.y * collisionModifier.y
+        EVENTS.notify(PlayerPositionUpdated(x, y))
     }
 }
 
@@ -44,8 +46,8 @@ class Weapon(private val playerWidth: Int, private val playerHeight: Int) {
     val sprite = Sprite(texture)
 
     init {
-        EVENTS.register(object: EventListener<PlayerMoved> {
-            override fun handle(event: PlayerMoved) {
+        EVENTS.register(object: EventListener<PlayerMovement> {
+            override fun handle(event: PlayerMovement) {
                 player.x = event.x.toFloat()
                 player.y = event.y.toFloat()
             }

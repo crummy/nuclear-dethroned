@@ -10,7 +10,7 @@ import com.malcolmcrum.nucleardethrone.events.EventListener
 import com.malcolmcrum.nucleardethrone.events.MouseAimed
 
 class Crosshair : EventListener<MouseAimed>, Actor() {
-    val log = Log(Crosshair::class.java)
+    val log = Log(Crosshair::class)
     val texture = Texture("crosshair.png")
 
     init {

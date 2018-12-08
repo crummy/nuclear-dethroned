@@ -29,7 +29,7 @@ class Game : ApplicationAdapter() {
         map = DesertMap()
         val crosshair = Crosshair()
         player = Player(this::collisionModifier)
-        camera = Camera(player, crosshair)
+        camera = Camera()
         stage = Stage(camera.viewport)
         stage.addActor(crosshair)
         stage.addActor(player)
