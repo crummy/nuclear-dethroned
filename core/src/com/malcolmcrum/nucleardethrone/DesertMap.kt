@@ -14,10 +14,11 @@ const val TILE_SIZE = 8
 
 class DesertMap {
     val map: TiledMap = TiledMap()
+    val texture = Texture("tile.png")
     val blockingCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
     val wallCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
-    val blockingTexture = TextureRegion(Texture("tile.png"))
-    val wallTexture = TextureRegion(Texture("wall.png"))
+    val blockingTexture = TextureRegion(texture, 8, 8, 8, 8)
+    val wallTexture = TextureRegion(texture, 8, 16, 8, 8)
     val blockingTile = StaticTiledMapTile(blockingTexture)
     val wallTile = StaticTiledMapTile(wallTexture)
     val blockingLayer = TiledMapTileLayer(32, 32, TILE_SIZE, TILE_SIZE)
@@ -26,6 +27,7 @@ class DesertMap {
     init {
         blockingTile.properties.put(BLOCKING, true)
         blockingTile.offsetY = TILE_SIZE / 2f
+        wallTile.offsetY = -TILE_SIZE / 2f
         blockingCell.tile = blockingTile
         wallCell.tile = wallTile
 
