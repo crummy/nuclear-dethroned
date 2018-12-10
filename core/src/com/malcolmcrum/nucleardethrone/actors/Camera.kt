@@ -35,7 +35,7 @@ class Camera : Actor() {
 
     fun update() {
         val position = Vector2(player.x, player.y).lerp(Vector2(crosshair.x, crosshair.y), 0.25f)
-        viewport.camera.position.lerp(Vector3(position.x, position.y, 0f), 0.1f)
+        viewport.camera.position.lerp(Vector3(position.x, position.y, 0f), 0.25f)
         viewport.camera.update()
     }
 }

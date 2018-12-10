@@ -39,17 +39,17 @@ class Player(val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMov
 }
 
 class Weapon(private val playerWidth: Int, private val playerHeight: Int) {
-    private var crosshair: Vector2 = Vector2.Zero
-    private var player: Vector2 = Vector2.Zero
+    private var crosshair: Vector2 = Vector2()
+    private var player: Vector2 = Vector2()
 
     val texture = Texture("pistol.png")
     val sprite = Sprite(texture)
 
     init {
-        EVENTS.register(object: EventListener<PlayerMovement> {
-            override fun handle(event: PlayerMovement) {
-                player.x = event.x.toFloat()
-                player.y = event.y.toFloat()
+        EVENTS.register(object: EventListener<PlayerPositionUpdated> {
+            override fun handle(event: PlayerPositionUpdated) {
+                player.x = event.x
+                player.y = event.y
             }
         })
         EVENTS.register(object: EventListener<MouseAimed> {
@@ -63,7 +63,7 @@ class Weapon(private val playerWidth: Int, private val playerHeight: Int) {
     fun draw(batch: Batch) {
         val toCrosshair = Vector2(crosshair.x, crosshair.y).sub(player.x, player.y).nor().scl(4f)
         val playerCenter = Vector2(player.x + playerWidth / 2f, player.y + playerHeight / 2f)
-        sprite.setOrigin(-8f, 0f)
+        sprite.setOrigin(-2f, 0f)
         sprite.setOriginBasedPosition(playerCenter.x + toCrosshair.x, playerCenter.y + toCrosshair.y)
         sprite.rotation = toCrosshair.angle()
         sprite.draw(batch)
