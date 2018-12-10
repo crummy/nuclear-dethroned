@@ -37,7 +37,7 @@ class InputHandler {
         camera.unproject(aimPosition)
         EVENTS.notify(MouseAimed(aimPosition.x, aimPosition.y))
 
-        if (Gdx.input.isKeyPressed(LEFT)) {
+        if (Gdx.input.isButtonPressed(LEFT)) {
             EVENTS.notify(MouseClicked(aimPosition.x, aimPosition.y))
         }
     }

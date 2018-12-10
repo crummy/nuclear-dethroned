@@ -8,10 +8,7 @@ import com.badlogic.gdx.maps.MapRenderer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.malcolmcrum.nucleardethrone.actors.Bandit
-import com.malcolmcrum.nucleardethrone.actors.Camera
-import com.malcolmcrum.nucleardethrone.actors.Crosshair
-import com.malcolmcrum.nucleardethrone.actors.Player
+import com.malcolmcrum.nucleardethrone.actors.*
 import com.malcolmcrum.nucleardethrone.events.EventManager
 
 val EVENTS = EventManager()
@@ -23,6 +20,7 @@ class Game : ApplicationAdapter() {
     lateinit var camera: Camera
     lateinit var map: DesertMap
     lateinit var mapRenderer: MapRenderer
+    lateinit var bulletManager: BulletManager
     val enemies = mutableListOf<Bandit>()
 
     override fun create() {
@@ -38,6 +36,7 @@ class Game : ApplicationAdapter() {
         enemies.add(Bandit(this::collides))
         enemies.add(Bandit(this::collides))
         enemies.forEach(stage::addActor)
+        bulletManager = BulletManager()
         mapRenderer = OrthogonalTiledMapRenderer(map.map)
         mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
         Gdx.input.isCursorCatched = true
@@ -53,6 +52,7 @@ class Game : ApplicationAdapter() {
         mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
         mapRenderer.render(listOf(1).toIntArray()) // render walls
         stage.draw() // render player, etc
+        bulletManager.draw(stage.batch)
         mapRenderer.render(listOf(0).toIntArray()) // render blocking tiles
         camera.update()
     }

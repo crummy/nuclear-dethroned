@@ -7,10 +7,7 @@ import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
 import com.malcolmcrum.nucleardethrone.EVENTS
 import com.malcolmcrum.nucleardethrone.Log
-import com.malcolmcrum.nucleardethrone.events.EventListener
-import com.malcolmcrum.nucleardethrone.events.MouseAimed
-import com.malcolmcrum.nucleardethrone.events.PlayerMovement
-import com.malcolmcrum.nucleardethrone.events.PlayerPositionUpdated
+import com.malcolmcrum.nucleardethrone.events.*
 import com.malcolmcrum.nucleardethrone.setBoundsCentered
 
 class Player(val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMovement>, Actor() {
@@ -22,6 +19,11 @@ class Player(val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMov
     init {
         setBoundsCentered(100f, 100f, texture.width.toFloat(), texture.height.toFloat())
         EVENTS.register(this)
+        EVENTS.register(object: EventListener<MouseClicked> {
+            override fun handle(event: MouseClicked) {
+                shoot(event.x, event.y)
+            }
+        })
     }
 
     override fun draw(batch: Batch, parentAlpha: Float) {
@@ -35,6 +37,12 @@ class Player(val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMov
         x += velocity.x * collisionModifier.x
         y += velocity.y * collisionModifier.y
         EVENTS.notify(PlayerPositionUpdated(x, y))
+    }
+
+    private fun shoot(x: Float, y: Float) {
+        val position = Vector2(this.x, this.y)
+        val velocity = Vector2(x, y).sub(position).nor().scl(2f)
+        EVENTS.notify(BulletFired(position, velocity, playerFriendly = true))
     }
 }
 
