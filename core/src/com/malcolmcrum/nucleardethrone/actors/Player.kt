@@ -10,14 +10,14 @@ import com.malcolmcrum.nucleardethrone.Log
 import com.malcolmcrum.nucleardethrone.events.*
 import com.malcolmcrum.nucleardethrone.setBoundsCentered
 
-class Player(val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMovement>, Actor() {
+class Player(position: Vector2, val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMovement>, Actor() {
 
     val log = Log(Player::class)
     val texture = Texture("player.png")
     val weapon = Weapon(texture.width, texture.height)
 
     init {
-        setBoundsCentered(100f, 100f, texture.width.toFloat(), texture.height.toFloat())
+        setBoundsCentered(position.x, position.y, texture.width.toFloat(), texture.height.toFloat())
         EVENTS.register(this)
         EVENTS.register(object: EventListener<MouseDown> {
             override fun handle(event: MouseDown) {

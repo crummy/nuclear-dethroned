@@ -13,13 +13,12 @@ data class Waiting(val ticksLeft: Int = Random.nextInt(MAX_WAIT)) : Action()
 const val MAX_WAIT = 100
 const val CLOSE_DISTANCE = 0.1f
 
-class Bandit(private val collisionCheck: (x: Float, y: Float) -> Boolean) : Actor() {
+class Bandit(position: Vector2, private val collisionCheck: (x: Float, y: Float) -> Boolean) : Actor() {
     var action: Action
     val texture = Texture("bandit.png")
 
     init {
-        val location = pickGoodLocation()
-        setPosition(location.x, location.y)
+        setPosition(position.x, position.y)
         action = Waiting()
     }
 
@@ -47,15 +46,5 @@ class Bandit(private val collisionCheck: (x: Float, y: Float) -> Boolean) : Acto
                 if (ticksLeft == 0) Moving(Random.nextFloat() * 200, Random.nextFloat() * 200) else Waiting(ticksLeft)
             }
         }
-    }
-
-    private fun pickGoodLocation(): Vector2 {
-        for (attempt in 0..100) {
-            x = Random.nextFloat() * 200
-            y = Random.nextFloat() * 200
-            if (!collisionCheck(x, y))
-                return Vector2(x, y)
-        }
-        throw Exception("Could not find good location")
     }
 }
