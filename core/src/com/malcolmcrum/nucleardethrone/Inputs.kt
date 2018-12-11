@@ -4,11 +4,11 @@ import com.badlogic.gdx.Gdx
 import com.badlogic.gdx.Input.Keys.*
 import com.badlogic.gdx.graphics.Camera
 import com.badlogic.gdx.math.Vector3
-import com.malcolmcrum.nucleardethrone.events.MouseAimed
-import com.malcolmcrum.nucleardethrone.events.MouseClicked
-import com.malcolmcrum.nucleardethrone.events.PlayerMovement
+import com.malcolmcrum.nucleardethrone.events.*
 
 class InputHandler {
+    private val lastMouseDown: MutableMap<Int, Boolean> = HashMap()
+
     fun handle(camera: Camera) {
         handleKeyboardInput()
         handleMouseInput(camera)
@@ -37,8 +37,17 @@ class InputHandler {
         camera.unproject(aimPosition)
         EVENTS.notify(MouseAimed(aimPosition.x, aimPosition.y))
 
-        if (Gdx.input.isButtonPressed(LEFT)) {
-            EVENTS.notify(MouseClicked(aimPosition.x, aimPosition.y))
+        val mouseButtonDown = Gdx.input.isButtonPressed(LEFT)
+        if (mouseButtonDown) {
+            EVENTS.notify(MouseDragged(aimPosition.x, aimPosition.y))
+            if (lastMouseDown[LEFT] == false) {
+                EVENTS.notify(MouseDown(aimPosition.x, aimPosition.y))
+            }
+        } else {
+            if (lastMouseDown[LEFT] == true) {
+                EVENTS.notify(MouseUp(aimPosition.x, aimPosition.y))
+            }
         }
+        lastMouseDown[LEFT] = mouseButtonDown
     }
 }

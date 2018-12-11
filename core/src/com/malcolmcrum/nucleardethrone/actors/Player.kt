@@ -19,8 +19,8 @@ class Player(val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMov
     init {
         setBoundsCentered(100f, 100f, texture.width.toFloat(), texture.height.toFloat())
         EVENTS.register(this)
-        EVENTS.register(object: EventListener<MouseClicked> {
-            override fun handle(event: MouseClicked) {
+        EVENTS.register(object: EventListener<MouseDown> {
+            override fun handle(event: MouseDown) {
                 shoot(event.x, event.y)
             }
         })
