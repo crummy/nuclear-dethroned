@@ -40,8 +40,9 @@ class Player(val position: Vector2, val collisionCheck: (Collides) -> Collision)
     }
 
     fun draw(batch: Batch) {
-        sprite.setPosition(position.x, position.y)
+        sprite.setOriginBasedPosition(position.x, position.y)
         sprite.draw(batch)
+        drawDebug(batch)
         weapon.draw(batch)
         crosshair.draw(batch)
     }

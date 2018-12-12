@@ -1,10 +1,23 @@
 package com.malcolmcrum.nucleardethrone
 
+import com.badlogic.gdx.graphics.Color
+import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 
 interface Collides {
     fun getBoundary(): Rectangle
+    fun drawDebug(batch: Batch) {
+        batch.end()
+        val shapeRenderer = ShapeRenderer()
+        shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
+        shapeRenderer.projectionMatrix = batch.projectionMatrix;
+        shapeRenderer.color = Color.WHITE
+        shapeRenderer.rect(getBoundary().x, getBoundary().y, getBoundary().width, getBoundary().height)
+        shapeRenderer.end()
+        batch.begin()
+    }
 }
 
 data class Collision(val up: Boolean, val down: Boolean, val left: Boolean, val right: Boolean) {
