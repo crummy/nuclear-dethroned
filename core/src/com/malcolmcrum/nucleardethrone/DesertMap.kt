@@ -9,8 +9,8 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import com.badlogic.gdx.math.Vector2
 
 const val BLOCKING: String = "BLOCKING"
-const val TOTAL_MAP_WIDTH = 38
-const val TOTAL_MAP_HEIGHT = 38
+const val TOTAL_MAP_WIDTH = 1024
+const val TOTAL_MAP_HEIGHT = 1024
 
 class DesertMap(private val level: Level) {
     val map: TiledMap = TiledMap()
@@ -100,6 +100,8 @@ class DesertMap(private val level: Level) {
         }
         throw Exception("Couldn't find an available position")
     }
+
+    val playerStart: Vector2 = level.playerStart.add(TOTAL_MAP_WIDTH/2f - level.width/2f, TOTAL_MAP_HEIGHT/2f - level.height/2f)
 }
 
 fun TiledMapTile?.isBlocking(): Boolean {

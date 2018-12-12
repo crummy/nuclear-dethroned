@@ -34,8 +34,8 @@ class LevelGenerator(val levelWidth: Int,
     }
 
     private fun clearRoom(walls: MutableList<MutableList<Boolean>>, room: Rectangle) {
-        (room.y.toInt() until room.y.toInt() + room.height.toInt() - 1).forEach { y ->
-            (room.x.toInt() until room.x.toInt() + room.height.toInt() - 1).forEach { x ->
+        (room.bottom().toInt() until room.top().toInt()).forEach { y ->
+            (room.left().toInt() until room.right().toInt()).forEach { x ->
                 walls[y][x] = false
             }
         }

@@ -20,3 +20,8 @@ infix fun ClosedFloatingPointRange<Float>.step(step: Float): Iterable<Float> {
 fun Rectangle.randomPoint(): Vector2 {
     return Vector2(x + Random.nextInt(width.toInt()), y + Random.nextInt(height.toInt()))
 }
+
+fun Rectangle.bottom() = y
+fun Rectangle.top() = y + height
+fun Rectangle.left() = x
+fun Rectangle.right() = x + width

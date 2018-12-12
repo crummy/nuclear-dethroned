@@ -29,7 +29,7 @@ class Game : ApplicationAdapter() {
     override fun create() {
         val level = LevelGenerator(64, 64).generate()
         map = DesertMap(level)
-        player = Player(level.playerStart, this::collisionModifier)
+        player = Player(map.playerStart, this::collisionModifier)
         camera = Camera()
         stage = Stage(camera.viewport)
         stage.addActor(camera)
