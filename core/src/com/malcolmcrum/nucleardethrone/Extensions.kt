@@ -2,7 +2,10 @@ package com.malcolmcrum.nucleardethrone
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.math.Rectangle
+import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import kotlin.random.Random
 
 fun Batch.drawCentered(texture: Texture, x: Float, y: Float) {
     this.draw(texture, x - texture.width / 2f, y - texture.height / 2f)
@@ -23,4 +26,8 @@ infix fun ClosedFloatingPointRange<Float>.step(step: Float): Iterable<Float> {
         if (next > endInclusive) null else next
     }
     return sequence.asIterable()
+}
+
+fun Rectangle.randomPoint(): Vector2 {
+    return Vector2(x + Random.nextInt(width.toInt()), y + Random.nextInt(height.toInt()))
 }

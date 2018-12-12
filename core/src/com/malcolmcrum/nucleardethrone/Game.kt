@@ -24,9 +24,10 @@ class Game : ApplicationAdapter() {
     val enemies = mutableListOf<Bandit>()
 
     override fun create() {
-        map = DesertMap()
+        val level = LevelGenerator(128, 128).generate()
+        map = DesertMap(level)
         val crosshair = Crosshair()
-        player = Player(map.availablePosition(), this::collisionModifier)
+        player = Player(level.playerStart, this::collisionModifier)
         camera = Camera()
         stage = Stage(camera.viewport)
         stage.addActor(crosshair)

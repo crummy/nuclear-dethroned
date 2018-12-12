@@ -12,10 +12,8 @@ const val BLOCKING: String = "BLOCKING"
 const val TILE_SIZE = 8
 const val TOTAL_MAP_WIDTH = 1024
 const val TOTAL_MAP_HEIGHT = 1024
-const val SPAWN_MAP_WIDTH = 128
-const val SPAWN_MAP_HEIGHT = 128
 
-class DesertMap {
+class DesertMap(private val level: Level) {
     val map: TiledMap = TiledMap()
     val texture = Texture("tile.png")
     val blockingCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
@@ -49,10 +47,31 @@ class DesertMap {
         leftTrimCell.tile = leftTrimTile
         rightTrimCell.tile = rightTrimTile
 
-        MapGenerator(blockingLayer, blockingCell, SPAWN_MAP_WIDTH, SPAWN_MAP_HEIGHT, TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT).generate()
+        fillEntireMap()
+        clearRooms()
         addTrimmings()
         map.layers.add(blockingLayer)
         map.layers.add(trimmingLayer)
+    }
+
+    private fun fillEntireMap() {
+        (0..TOTAL_MAP_WIDTH).forEach { x ->
+            (0..TOTAL_MAP_HEIGHT).forEach { y ->
+                blockingLayer.setCell(x, y, blockingCell)
+            }
+        }
+    }
+
+    private fun clearRooms() {
+        (0 until level.width).forEach { x ->
+            (0 until level.height).forEach { y ->
+                if (!level.cell(x, y)) {
+                    var cellX = TOTAL_MAP_WIDTH/2 - level.width/2 + x
+                    var cellY = TOTAL_MAP_HEIGHT/2 - level.height/2 + y
+                    blockingLayer.setCell(cellX, cellY, null)
+                }
+            }
+        }
     }
 
     private fun addTrimmings() {
