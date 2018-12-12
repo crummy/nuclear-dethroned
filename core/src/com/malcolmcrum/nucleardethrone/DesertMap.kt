@@ -86,8 +86,8 @@ class DesertMap(private val level: Level) {
         }
     }
 
-    fun tileAt(x: Float, y: Float): TiledMapTile? {
-        return blockingLayer.getCell(x.toInt(), y.toInt())?.tile
+    fun tileAt(x: Int, y: Int): TiledMapTile? {
+        return blockingLayer.getCell(x, y)?.tile
     }
 
     fun availablePosition(): Vector2 {

@@ -13,7 +13,7 @@ data class Waiting(val ticksLeft: Int = Random.nextInt(MAX_WAIT)) : Action()
 const val MAX_WAIT = 100
 const val CLOSE_DISTANCE = 0.1f
 
-class Bandit(val position: Vector2, private val collisionCheck: (x: Float, y: Float) -> Boolean) {
+class Bandit(val position: Vector2) {
     var action: Action
     val sprite = Sprite(Texture("bandit.png"))
 

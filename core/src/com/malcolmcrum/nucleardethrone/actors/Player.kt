@@ -3,12 +3,15 @@ package com.malcolmcrum.nucleardethrone.actors
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.malcolmcrum.nucleardethrone.Collides
+import com.malcolmcrum.nucleardethrone.Collision
 import com.malcolmcrum.nucleardethrone.EVENTS
 import com.malcolmcrum.nucleardethrone.Log
 import com.malcolmcrum.nucleardethrone.events.*
 
-class Player(val position: Vector2, val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMovement> {
+class Player(val position: Vector2, val collisionCheck: (Collides) -> Collision) : Collides {
 
     val log = Log(Player::class)
     val sprite = Sprite(Texture("player.png"))
@@ -18,7 +21,17 @@ class Player(val position: Vector2, val collisionCheck: (Vector2) -> Vector2) : 
     init {
         sprite.setOrigin(0.5f, 0.5f)
         sprite.setScale(1/8f)
-        EVENTS.register(this)
+        val player = this
+        EVENTS.register(object: EventListener<PlayerMovement> {
+            override fun handle(event: PlayerMovement) {
+                val velocity = Vector2(event.x.toFloat(), event.y.toFloat())
+                val collision = collisionCheck.invoke(player)
+                collision.modify(velocity)
+                position.x += velocity.x * 0.2f
+                position.y += velocity.y * 0.2f
+                EVENTS.notify(PlayerPositionUpdated(position.x, position.y))
+            }
+        })
         EVENTS.register(object: EventListener<MouseDown> {
             override fun handle(event: MouseDown) {
                 shoot(event.x, event.y)
@@ -33,12 +46,8 @@ class Player(val position: Vector2, val collisionCheck: (Vector2) -> Vector2) : 
         crosshair.draw(batch)
     }
 
-    override fun handle(event: PlayerMovement) {
-        val velocity = Vector2(event.x.toFloat(), event.y.toFloat())
-        val collisionModifier = collisionCheck.invoke(velocity)
-        position.x += velocity.x * 0.1f * collisionModifier.x
-        position.y += velocity.y * 0.1f * collisionModifier.y
-        EVENTS.notify(PlayerPositionUpdated(position.x, position.y))
+    override fun getBoundary(): Rectangle {
+        return Rectangle(position.x - 0.5f, position.y - 0.5f, 1f, 1f)
     }
 
     private fun shoot(x: Float, y: Float) {
