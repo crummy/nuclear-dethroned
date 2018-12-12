@@ -25,8 +25,35 @@ class LevelGenerator(val levelWidth: Int,
         val walls = createEmptyMap()
         val rooms = (0..ROOM_COUNT.random()).map { createRoom() }
         rooms.forEach { clearRoom(walls, it) }
+        rooms.zipWithNext().forEach { clearHallway(walls, it.first, it.second) }
         val playerStart = rooms.random().randomPoint()
         return Level(playerStart, walls)
+    }
+
+    private fun clearHallway(walls: MutableList<MutableList<Boolean>>, first: Rectangle, second: Rectangle) {
+        val origin = first.randomPoint()
+        val destination = second.randomPoint()
+        val horizontalFirst = Random.nextBoolean()
+        if (horizontalFirst) {
+            if (origin.x < destination.x) {
+                (origin.x..destination.x step 1f).forEach { x ->
+                    walls[origin.y.toInt()][x.toInt()] = true
+                }
+            } else {
+                (destination.x..origin.x step 1f).forEach { x ->
+                    walls[origin.y.toInt()][x.toInt()] = true
+                }
+            }
+            if (origin.y < destination.y) {
+                (origin.y..destination.y step 1f).forEach { y ->
+                    walls[y.toInt()][destination.y.toInt()] = true
+                }
+            } else {
+                (destination.y..origin.y step 1f).forEach { y ->
+                    walls[y.toInt()][destination.x.toInt()] = true
+                }
+            }
+        }
     }
 
     private fun createEmptyMap(): MutableList<MutableList<Boolean>> {
