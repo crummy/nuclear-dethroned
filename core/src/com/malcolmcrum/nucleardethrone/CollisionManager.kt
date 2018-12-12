@@ -12,7 +12,7 @@ interface Collides {
         batch.end()
         val shapeRenderer = ShapeRenderer()
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
-        shapeRenderer.projectionMatrix = batch.projectionMatrix;
+        shapeRenderer.projectionMatrix = batch.projectionMatrix
         shapeRenderer.color = Color.WHITE
         shapeRenderer.rect(getBoundary().x, getBoundary().y, getBoundary().width, getBoundary().height)
         shapeRenderer.end()
