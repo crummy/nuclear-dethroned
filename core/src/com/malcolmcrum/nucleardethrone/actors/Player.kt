@@ -48,7 +48,7 @@ class Player(val position: Vector2, val collisionCheck: (Collides) -> Collision)
     }
 
     override fun getBoundary(): Rectangle {
-        return Rectangle(position.x - 0.5f, position.y - 0.5f, 1f, 1f)
+        return sprite.boundingRectangle
     }
 
     private fun shoot(x: Float, y: Float) {

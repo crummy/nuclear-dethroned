@@ -3,13 +3,15 @@ package com.malcolmcrum.nucleardethrone.actors
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Actor
+import com.malcolmcrum.nucleardethrone.Collides
 import com.malcolmcrum.nucleardethrone.EVENTS
 import com.malcolmcrum.nucleardethrone.events.BulletFired
 import com.malcolmcrum.nucleardethrone.events.EventListener
 
-class BulletManager : EventListener<BulletFired> {
+class BulletManager : EventListener<BulletFired>, Collides {
     val sprite = Sprite(Texture("bullet.png"))
 
     private val bullets: MutableList<Bullet> = ArrayList()
@@ -30,7 +32,12 @@ class BulletManager : EventListener<BulletFired> {
             sprite.rotation = it.velocity.angle()
             sprite.setPosition(it.x, it.y)
             sprite.draw(batch)
+            drawDebug(batch)
         }
+    }
+
+    override fun getBoundary(): Rectangle {
+        return sprite.boundingRectangle
     }
 
 }
