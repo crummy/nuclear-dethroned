@@ -78,26 +78,27 @@ class Game : ApplicationAdapter() {
     }
 
     // TODO: figure out off-by-one error here
+    // TODO: use rectangle.collides
     fun collidesEast(): Boolean {
-        return (1f..1f step 0.5f).any { step ->
+        return (-.5f..0.5f step 0.5f).any { step ->
             collides(player.position.x + 1, player.position.y + step)
         }
     }
 
     fun collidesWest(): Boolean {
-        return (1f..1f step 0.5f).any { step ->
+        return (-.5f..0.5f step 0.5f).any { step ->
             collides(player.position.x, player.position.y + step)
         }
     }
 
     fun collidesNorth(): Boolean {
-        return (1f..1f step 0.5f).any { step ->
+        return (-.5f..0.5f step 0.5f).any { step ->
             collides(player.position.x + step, player.position.y + 1)
         }
     }
 
     fun collidesSouth(): Boolean {
-        return (1f..1f step 0.5f).any { step ->
+        return (-.5f..0.5f step 0.5f).any { step ->
             collides(player.position.x + step, player.position.y)
         }
     }
