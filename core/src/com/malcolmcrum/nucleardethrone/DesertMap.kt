@@ -9,9 +9,8 @@ import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import com.badlogic.gdx.math.Vector2
 
 const val BLOCKING: String = "BLOCKING"
-const val TILE_SIZE = 8
-const val TOTAL_MAP_WIDTH = 1024
-const val TOTAL_MAP_HEIGHT = 1024
+const val TOTAL_MAP_WIDTH = 38
+const val TOTAL_MAP_HEIGHT = 38
 
 class DesertMap(private val level: Level) {
     val map: TiledMap = TiledMap()
@@ -31,16 +30,16 @@ class DesertMap(private val level: Level) {
     val topTrimTile = StaticTiledMapTile(topTrimTexture)
     val leftTrimTile = StaticTiledMapTile(leftTrimTexture)
     val rightTrimTile = StaticTiledMapTile(rightTrimTexture)
-    val blockingLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, TILE_SIZE, TILE_SIZE)
-    val trimmingLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, TILE_SIZE, TILE_SIZE)
+    val blockingLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
+    val trimmingLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
 
     init {
         blockingTile.properties.put(BLOCKING, true)
-        blockingTile.offsetY = TILE_SIZE / 2f
-        bottomTrimTile.offsetY = TILE_SIZE / 2f
-        topTrimTile.offsetY = TILE_SIZE / 2f
-        rightTrimTile.offsetY = TILE_SIZE / 2f
-        leftTrimTile.offsetY = TILE_SIZE / 2f
+        blockingTile.offsetY = 0.5f
+        bottomTrimTile.offsetY = 0.5f
+        topTrimTile.offsetY = 0.5f
+        rightTrimTile.offsetY = 0.5f
+        leftTrimTile.offsetY = 0.5f
         blockingCell.tile = blockingTile
         bottomTrimCell.tile = bottomTrimTile
         topTrimCell.tile = topTrimTile
@@ -66,8 +65,8 @@ class DesertMap(private val level: Level) {
         (0 until level.width).forEach { x ->
             (0 until level.height).forEach { y ->
                 if (!level.cell(x, y)) {
-                    var cellX = TOTAL_MAP_WIDTH/2 - level.width/2 + x
-                    var cellY = TOTAL_MAP_HEIGHT/2 - level.height/2 + y
+                    val cellX = TOTAL_MAP_WIDTH/2 - level.width/2 + x
+                    val cellY = TOTAL_MAP_HEIGHT/2 - level.height/2 + y
                     blockingLayer.setCell(cellX, cellY, null)
                 }
             }
@@ -88,14 +87,14 @@ class DesertMap(private val level: Level) {
     }
 
     fun tileAt(x: Float, y: Float): TiledMapTile? {
-        return blockingLayer.getCell((x / TILE_SIZE).toInt(), (y / TILE_SIZE).toInt())?.tile
+        return blockingLayer.getCell(x.toInt(), y.toInt())?.tile
     }
 
     fun availablePosition(): Vector2 {
         (0 until TOTAL_MAP_HEIGHT).shuffled().forEach { y ->
             (0 until TOTAL_MAP_WIDTH).shuffled().forEach { x ->
                 if (blockingLayer.getCell(x, y) == null) {
-                    return Vector2(x * TILE_SIZE.toFloat(), y * TILE_SIZE.toFloat())
+                    return Vector2(x.toFloat(), y.toFloat())
                 }
             }
         }

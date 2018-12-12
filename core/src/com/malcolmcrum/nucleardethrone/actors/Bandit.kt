@@ -2,8 +2,8 @@ package com.malcolmcrum.nucleardethrone.actors
 
 import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
+import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Actor
 import kotlin.random.Random
 
 sealed class Action
@@ -13,34 +13,35 @@ data class Waiting(val ticksLeft: Int = Random.nextInt(MAX_WAIT)) : Action()
 const val MAX_WAIT = 100
 const val CLOSE_DISTANCE = 0.1f
 
-class Bandit(position: Vector2, private val collisionCheck: (x: Float, y: Float) -> Boolean) : Actor() {
+class Bandit(val position: Vector2, private val collisionCheck: (x: Float, y: Float) -> Boolean) {
     var action: Action
-    val texture = Texture("bandit.png")
+    val sprite = Sprite(Texture("bandit.png"))
 
     init {
-        setPosition(position.x, position.y)
+        sprite.setOrigin(0.5f, 0.5f)
+        sprite.setScale(1/8f)
         action = Waiting()
     }
 
-    override fun draw(batch: Batch, parentAlpha: Float) {
-        batch.draw(texture, x, y)
+    fun draw(batch: Batch) {
+        sprite.setPosition(position.x, position.y)
+        sprite.draw(batch)
     }
 
     fun update() {
         val nextAction = nextAction(action)
         if (nextAction is Moving) {
-            val position = Vector2(x, y)
             val destination = Vector2(nextAction.x, nextAction.y)
             val toDestination = destination.sub(position).nor()
-            x += toDestination.x
-            y += toDestination.y
+            position.x += toDestination.x
+            position.y += toDestination.y
         }
         action = nextAction
     }
 
     private fun nextAction(action: Action): Action {
         return when (action) {
-            is Moving -> if (Vector2(x, y).dst(action.x, action.y) < CLOSE_DISTANCE) Waiting() else action
+            is Moving -> if (position.dst(action.x, action.y) < CLOSE_DISTANCE) Waiting() else action
             is Waiting -> {
                 val ticksLeft = action.ticksLeft - 1
                 if (ticksLeft == 0) Moving(Random.nextFloat() * 200, Random.nextFloat() * 200) else Waiting(ticksLeft)

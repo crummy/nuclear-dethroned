@@ -4,20 +4,20 @@ import com.badlogic.gdx.graphics.Texture
 import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.Vector2
-import com.badlogic.gdx.scenes.scene2d.Actor
 import com.malcolmcrum.nucleardethrone.EVENTS
 import com.malcolmcrum.nucleardethrone.Log
 import com.malcolmcrum.nucleardethrone.events.*
-import com.malcolmcrum.nucleardethrone.setBoundsCentered
 
-class Player(position: Vector2, val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMovement>, Actor() {
+class Player(val position: Vector2, val collisionCheck: (Vector2) -> Vector2) : EventListener<PlayerMovement> {
 
     val log = Log(Player::class)
-    val texture = Texture("player.png")
-    val weapon = Weapon(texture.width, texture.height)
+    val sprite = Sprite(Texture("player.png"))
+    val weapon = Weapon()
+    val crosshair = Crosshair(position.x, position.y)
 
     init {
-        setBoundsCentered(position.x, position.y, texture.width.toFloat(), texture.height.toFloat())
+        sprite.setOrigin(0.5f, 0.5f)
+        sprite.setScale(1/8f)
         EVENTS.register(this)
         EVENTS.register(object: EventListener<MouseDown> {
             override fun handle(event: MouseDown) {
@@ -26,34 +26,38 @@ class Player(position: Vector2, val collisionCheck: (Vector2) -> Vector2) : Even
         })
     }
 
-    override fun draw(batch: Batch, parentAlpha: Float) {
-        batch.draw(texture, x, y)
+    fun draw(batch: Batch) {
+        sprite.setPosition(position.x, position.y)
+        sprite.draw(batch)
         weapon.draw(batch)
+        crosshair.draw(batch)
     }
 
     override fun handle(event: PlayerMovement) {
         val velocity = Vector2(event.x.toFloat(), event.y.toFloat())
         val collisionModifier = collisionCheck.invoke(velocity)
-        x += velocity.x * collisionModifier.x
-        y += velocity.y * collisionModifier.y
-        EVENTS.notify(PlayerPositionUpdated(x, y))
+        position.x += velocity.x * 0.1f * collisionModifier.x
+        position.y += velocity.y * 0.1f * collisionModifier.y
+        EVENTS.notify(PlayerPositionUpdated(position.x, position.y))
     }
 
     private fun shoot(x: Float, y: Float) {
-        val position = Vector2(this.x, this.y)
+        val position = Vector2(position.x, position.y)
         val velocity = Vector2(x, y).sub(position).nor().scl(2f)
         EVENTS.notify(BulletFired(position, velocity, playerFriendly = true))
     }
 }
 
-class Weapon(private val playerWidth: Int, private val playerHeight: Int) {
-    private var crosshair: Vector2 = Vector2()
+class Weapon {
+    private var aimPosition: Vector2 = Vector2()
     private var player: Vector2 = Vector2()
 
     val texture = Texture("pistol.png")
     val sprite = Sprite(texture)
 
     init {
+        sprite.setOrigin(0.5f, 0.5f)
+        sprite.setScale(1/8f)
         EVENTS.register(object: EventListener<PlayerPositionUpdated> {
             override fun handle(event: PlayerPositionUpdated) {
                 player.x = event.x
@@ -62,16 +66,17 @@ class Weapon(private val playerWidth: Int, private val playerHeight: Int) {
         })
         EVENTS.register(object: EventListener<MouseAimed> {
             override fun handle(event: MouseAimed) {
-                crosshair.x = event.x
-                crosshair.y = event.y
+                aimPosition.x = event.x
+                aimPosition.y = event.y
             }
         })
+        sprite.scale(1/8f)
     }
 
     fun draw(batch: Batch) {
-        val toCrosshair = Vector2(crosshair.x, crosshair.y).sub(player.x, player.y).nor().scl(4f)
-        val playerCenter = Vector2(player.x + playerWidth / 2f, player.y + playerHeight / 2f)
-        sprite.setOrigin(-2f, 0f)
+        val toCrosshair = Vector2(aimPosition.x, aimPosition.y).sub(player.x, player.y).nor().scl(0.5f)
+        val playerCenter = Vector2(player.x + 0.5f, player.y + 0.5f)
+        sprite.setOrigin(-0.25f, 0f)
         sprite.setOriginBasedPosition(playerCenter.x + toCrosshair.x, playerCenter.y + toCrosshair.y)
         sprite.rotation = toCrosshair.angle()
         sprite.draw(batch)

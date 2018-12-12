@@ -1,5 +1,6 @@
 package com.malcolmcrum.nucleardethrone.actors
 
+import com.badlogic.gdx.graphics.OrthographicCamera
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.math.Vector3
 import com.badlogic.gdx.scenes.scene2d.Actor
@@ -31,6 +32,7 @@ class Camera : Actor() {
                 player.y = event.y
             }
         })
+        (viewport.camera as OrthographicCamera).zoom = 1/8f
     }
 
     fun update() {

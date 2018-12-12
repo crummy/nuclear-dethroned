@@ -8,7 +8,10 @@ import com.badlogic.gdx.maps.MapRenderer
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer
 import com.badlogic.gdx.math.Vector2
 import com.badlogic.gdx.scenes.scene2d.Stage
-import com.malcolmcrum.nucleardethrone.actors.*
+import com.malcolmcrum.nucleardethrone.actors.Bandit
+import com.malcolmcrum.nucleardethrone.actors.BulletManager
+import com.malcolmcrum.nucleardethrone.actors.Camera
+import com.malcolmcrum.nucleardethrone.actors.Player
 import com.malcolmcrum.nucleardethrone.events.EventManager
 
 val EVENTS = EventManager()
@@ -24,21 +27,17 @@ class Game : ApplicationAdapter() {
     val enemies = mutableListOf<Bandit>()
 
     override fun create() {
-        val level = LevelGenerator(128, 128).generate()
+        val level = LevelGenerator(64, 64).generate()
         map = DesertMap(level)
-        val crosshair = Crosshair()
         player = Player(level.playerStart, this::collisionModifier)
         camera = Camera()
         stage = Stage(camera.viewport)
-        stage.addActor(crosshair)
-        stage.addActor(player)
         stage.addActor(camera)
         enemies.add(Bandit(map.availablePosition(), this::collides))
         enemies.add(Bandit(map.availablePosition(), this::collides))
         enemies.add(Bandit(map.availablePosition(), this::collides))
-        enemies.forEach(stage::addActor)
         bulletManager = BulletManager()
-        mapRenderer = OrthogonalTiledMapRenderer(map.map)
+        mapRenderer = OrthogonalTiledMapRenderer(map.map, 1/8f)
         mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
         Gdx.input.isCursorCatched = true
     }
@@ -53,7 +52,11 @@ class Game : ApplicationAdapter() {
         mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
         mapRenderer.render(listOf(1).toIntArray()) // render walls
         stage.draw() // render player, etc
+        stage.batch.begin()
+        player.draw(stage.batch)
         bulletManager.draw(stage.batch)
+        enemies.forEach { it.draw(stage.batch) }
+        stage.batch.end()
         mapRenderer.render(listOf(0).toIntArray()) // render blocking tiles
         camera.update()
     }
@@ -76,26 +79,26 @@ class Game : ApplicationAdapter() {
 
     // TODO: figure out off-by-one error here
     fun collidesEast(): Boolean {
-        return (1f..(player.height) step TILE_SIZE / 2f).any { step ->
-            collides(player.x + player.width, player.y + step)
+        return (1f..1f step 0.5f).any { step ->
+            collides(player.position.x + 1, player.position.y + step)
         }
     }
 
     fun collidesWest(): Boolean {
-        return (1f..(player.height) step TILE_SIZE / 2f).any { step ->
-            collides(player.x, player.y + step)
+        return (1f..1f step 0.5f).any { step ->
+            collides(player.position.x, player.position.y + step)
         }
     }
 
     fun collidesNorth(): Boolean {
-        return (1f..(player.width) step TILE_SIZE / 2f).any { step ->
-            collides(player.x + step, player.y + player.height)
+        return (1f..1f step 0.5f).any { step ->
+            collides(player.position.x + step, player.position.y + 1)
         }
     }
 
     fun collidesSouth(): Boolean {
-        return (1f..(player.width) step TILE_SIZE / 2f).any { step ->
-            collides(player.x + step, player.y)
+        return (1f..1f step 0.5f).any { step ->
+            collides(player.position.x + step, player.position.y)
         }
     }
 

@@ -15,6 +15,8 @@ class BulletManager : EventListener<BulletFired> {
     private val bullets: MutableList<Bullet> = ArrayList()
 
     init {
+        sprite.setOrigin(0.5f, 0.5f)
+        sprite.setScale(1/8f)
         EVENTS.register(this)
     }
 
@@ -23,14 +25,12 @@ class BulletManager : EventListener<BulletFired> {
     }
 
     fun draw(batch: Batch) {
-        batch.begin()
         bullets.forEach { it.update() }
         bullets.forEach {
             sprite.rotation = it.velocity.angle()
             sprite.setPosition(it.x, it.y)
             sprite.draw(batch)
         }
-        batch.end()
     }
 
 }
