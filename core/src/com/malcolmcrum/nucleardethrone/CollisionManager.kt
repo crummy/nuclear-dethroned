@@ -32,33 +32,34 @@ data class Collision(val up: Boolean, val down: Boolean, val left: Boolean, val 
 
 class CollisionManager(private val map: DesertMap) {
     fun checkCollision(entity: Collides, velocity: Vector2): Collision {
-        val rect = entity.boundary.plus(velocity)
+        val horizontalRect = entity.boundary.plus(Vector2(velocity.x, 0f))
         var up = false
         var down = false
         var left = false
         var right = false
-        (rect.bottom().toInt()..rect.top().toInt()).forEach { y ->
-            val rightTile = map.rectangleAt(rect.right().toInt(), y)
-            if (rightTile?.overlaps(rect) == true) {
+        (horizontalRect.bottom().toInt()..horizontalRect.top().toInt()).forEach { y ->
+            val rightTile = map.rectangleAt(horizontalRect.right().toInt(), y)
+            if (rightTile?.overlaps(horizontalRect) == true) {
                 right = true
-                EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(rect, rightTile))
+                EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(horizontalRect, rightTile))
             }
-            val leftTile = map.rectangleAt(rect.left().toInt(), y)
-            if (leftTile?.overlaps(rect) == true) {
+            val leftTile = map.rectangleAt(horizontalRect.left().toInt(), y)
+            if (leftTile?.overlaps(horizontalRect) == true) {
                 left = true
-                EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(rect, leftTile))
+                EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(horizontalRect, leftTile))
             }
         }
-        (rect.left()..rect.right() step 1f).forEach { x ->
-            val topTile = map.rectangleAt(x.toInt(), rect.top().toInt())
-            if (topTile?.overlaps(rect) == true) {
+        val verticalRect = entity.boundary.plus(Vector2(0f, velocity.y))
+        (verticalRect.left()..verticalRect.right() step 1f).forEach { x ->
+            val topTile = map.rectangleAt(x.toInt(), verticalRect.top().toInt())
+            if (topTile?.overlaps(verticalRect) == true) {
                 up = true
-                EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(rect, topTile))
+                EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(verticalRect, topTile))
             }
-            val bottomTile = map.rectangleAt(x.toInt(), rect.bottom().toInt())
-            if (bottomTile?.overlaps(rect) == true) {
+            val bottomTile = map.rectangleAt(x.toInt(), verticalRect.bottom().toInt())
+            if (bottomTile?.overlaps(verticalRect) == true) {
                 down = true
-                EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(rect, bottomTile))
+                EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(verticalRect, bottomTile))
             }
         }
         return Collision(up, down, left, right)
