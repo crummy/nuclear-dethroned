@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.malcolmcrum.nucleardethrone.events.Collided
 import com.malcolmcrum.nucleardethrone.events.EventListener
 
 interface Collides {
@@ -39,13 +40,13 @@ class CollisionManager(private val map: DesertMap) {
                 val rightTile = map.rectangleAt(horizontalRect.right().toInt(), y)
                 if (rightTile?.overlaps(horizontalRect) == true) {
                     collidedHorizontally = true
-                    EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(horizontalRect, rightTile))
+                    EVENTS.notify(Collided(horizontalRect, rightTile))
                 }
             } else if (velocity.movingLeft) {
                 val leftTile = map.rectangleAt(horizontalRect.left().toInt(), y)
                 if (leftTile?.overlaps(horizontalRect) == true) {
                     collidedHorizontally = true
-                    EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(horizontalRect, leftTile))
+                    EVENTS.notify(Collided(horizontalRect, leftTile))
                 }
             }
         }
@@ -56,13 +57,13 @@ class CollisionManager(private val map: DesertMap) {
                 val topTile = map.rectangleAt(x.toInt(), verticalRect.top().toInt())
                 if (topTile?.overlaps(verticalRect) == true) {
                     collidedVertically = true
-                    EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(verticalRect, topTile))
+                    EVENTS.notify(Collided(verticalRect, topTile))
                 }
             } else if (velocity.movingDown) {
                 val bottomTile = map.rectangleAt(x.toInt(), verticalRect.bottom().toInt())
                 if (bottomTile?.overlaps(verticalRect) == true) {
                     collidedVertically = true
-                    EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(verticalRect, bottomTile))
+                    EVENTS.notify(Collided(verticalRect, bottomTile))
                 }
             }
         }
@@ -71,11 +72,11 @@ class CollisionManager(private val map: DesertMap) {
 }
 
 class CollisionDebugger {
-    val collisions = mutableListOf<com.malcolmcrum.nucleardethrone.events.Collision>()
+    val collisions = mutableListOf<Collided>()
 
     init {
-        EVENTS.register(object: EventListener<com.malcolmcrum.nucleardethrone.events.Collision> {
-            override fun handle(event: com.malcolmcrum.nucleardethrone.events.Collision) {
+        EVENTS.register(object: EventListener<Collided> {
+            override fun handle(event: Collided) {
                 collisions.add(event)
             }
         })
