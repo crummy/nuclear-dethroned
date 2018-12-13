@@ -11,6 +11,8 @@ import com.malcolmcrum.nucleardethrone.EVENTS
 import com.malcolmcrum.nucleardethrone.Log
 import com.malcolmcrum.nucleardethrone.events.*
 
+const val PLAYER_SPEED = 0.15f
+
 class Player(val position: Vector2, val collisionCheck: (Collides) -> Collision) : Collides {
 
     val log = Log(Player::class)
@@ -24,11 +26,9 @@ class Player(val position: Vector2, val collisionCheck: (Collides) -> Collision)
         val player = this
         EVENTS.register(object: EventListener<PlayerMovement> {
             override fun handle(event: PlayerMovement) {
-                val velocity = Vector2(event.x.toFloat(), event.y.toFloat())
-                val collision = collisionCheck.invoke(player)
-                collision.modify(velocity)
-                position.x += velocity.x * 0.2f
-                position.y += velocity.y * 0.2f
+                val velocity = Vector2(event.x * PLAYER_SPEED, event.y * PLAYER_SPEED)
+                collisionCheck.invoke(player).modify(velocity)
+                position.add(velocity)
                 EVENTS.notify(PlayerPositionUpdated(position.x, position.y))
             }
         })
@@ -39,6 +39,9 @@ class Player(val position: Vector2, val collisionCheck: (Collides) -> Collision)
         })
     }
 
+    override val boundary: Rectangle
+        get() = sprite.boundingRectangle
+
     fun draw(batch: Batch) {
         sprite.setOriginBasedPosition(position.x, position.y)
         sprite.draw(batch)
@@ -46,15 +49,10 @@ class Player(val position: Vector2, val collisionCheck: (Collides) -> Collision)
         weapon.draw(batch)
         crosshair.draw(batch)
     }
-
-    override fun getBoundary(): Rectangle {
-        return sprite.boundingRectangle
-    }
-
     private fun shoot(x: Float, y: Float) {
-        val position = Vector2(position.x, position.y)
-        val velocity = Vector2(x, y).sub(position).nor().scl(2f)
-        EVENTS.notify(BulletFired(position, velocity, playerFriendly = true))
+        val target = Vector2(position.x, position.y)
+        val velocity = Vector2(x, y).sub(target).nor()
+        EVENTS.notify(BulletFired(target, velocity, playerFriendly = true))
     }
 }
 

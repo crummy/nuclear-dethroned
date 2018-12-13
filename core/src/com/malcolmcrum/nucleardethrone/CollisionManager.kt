@@ -7,14 +7,14 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 
 interface Collides {
-    fun getBoundary(): Rectangle
+    val boundary: Rectangle
     fun drawDebug(batch: Batch) {
         batch.end()
         val shapeRenderer = ShapeRenderer()
         shapeRenderer.begin(ShapeRenderer.ShapeType.Line)
         shapeRenderer.projectionMatrix = batch.projectionMatrix
         shapeRenderer.color = Color.WHITE
-        shapeRenderer.rect(getBoundary().x, getBoundary().y, getBoundary().width, getBoundary().height)
+        shapeRenderer.rect(boundary.x, boundary.y, boundary.width, boundary.height)
         shapeRenderer.end()
         batch.begin()
     }
@@ -31,7 +31,7 @@ data class Collision(val up: Boolean, val down: Boolean, val left: Boolean, val 
 
 class CollisionManager(private val map: DesertMap) {
     fun checkCollision(entity: Collides): Collision {
-        val rect = entity.getBoundary()
+        val rect = entity.boundary
         var up = false
         var down = false
         var left = false

@@ -36,9 +36,7 @@ class BulletManager : EventListener<BulletFired>, Collides {
         }
     }
 
-    override fun getBoundary(): Rectangle {
-        return sprite.boundingRectangle
-    }
+    override val boundary: Rectangle = sprite.boundingRectangle
 
 }
 
