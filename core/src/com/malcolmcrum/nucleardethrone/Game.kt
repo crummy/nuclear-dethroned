@@ -34,7 +34,7 @@ class Game : ApplicationAdapter() {
         enemies.add(Bandit(map.availablePosition()))
         enemies.add(Bandit(map.availablePosition()))
         enemies.add(Bandit(map.availablePosition()))
-        bulletManager = BulletManager()
+        bulletManager = BulletManager(collisionManager::checkCollision)
         mapRenderer = OrthogonalTiledMapRenderer(map.map, 1/8f)
         mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
         Gdx.input.isCursorCatched = true

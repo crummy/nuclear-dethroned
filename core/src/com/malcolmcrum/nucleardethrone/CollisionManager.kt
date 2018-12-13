@@ -21,48 +21,52 @@ interface Collides {
     }
 }
 
-data class Collision(val up: Boolean, val down: Boolean, val left: Boolean, val right: Boolean) {
+data class Collision(val collidedHorizontally: Boolean, val collidedVertically: Boolean) {
+    val collided = collidedHorizontally || collidedVertically
+
     fun modify(velocity: Vector2) {
-        if (velocity.x > 0 && right) velocity.x = 0f
-        if (velocity.x < 0 && left) velocity.x = 0f
-        if (velocity.y > 0 && up) velocity.y = 0f
-        if (velocity.y < 0 && down) velocity.y = 0f
+        if (collidedHorizontally) velocity.x = 0f
+        if (collidedVertically) velocity.y = 0f
     }
 }
 
 class CollisionManager(private val map: DesertMap) {
     fun checkCollision(entity: Collides, velocity: Vector2): Collision {
         val horizontalRect = entity.boundary.plus(Vector2(velocity.x, 0f))
-        var up = false
-        var down = false
-        var left = false
-        var right = false
+        var collidedHorizontally = false
         (horizontalRect.bottom().toInt()..horizontalRect.top().toInt()).forEach { y ->
-            val rightTile = map.rectangleAt(horizontalRect.right().toInt(), y)
-            if (rightTile?.overlaps(horizontalRect) == true) {
-                right = true
-                EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(horizontalRect, rightTile))
-            }
-            val leftTile = map.rectangleAt(horizontalRect.left().toInt(), y)
-            if (leftTile?.overlaps(horizontalRect) == true) {
-                left = true
-                EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(horizontalRect, leftTile))
+            if (velocity.movingRight) {
+                val rightTile = map.rectangleAt(horizontalRect.right().toInt(), y)
+                if (rightTile?.overlaps(horizontalRect) == true) {
+                    collidedHorizontally = true
+                    EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(horizontalRect, rightTile))
+                }
+            } else if (velocity.movingLeft) {
+                val leftTile = map.rectangleAt(horizontalRect.left().toInt(), y)
+                if (leftTile?.overlaps(horizontalRect) == true) {
+                    collidedHorizontally = true
+                    EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(horizontalRect, leftTile))
+                }
             }
         }
+        var collidedVertically = false
         val verticalRect = entity.boundary.plus(Vector2(0f, velocity.y))
         (verticalRect.left()..verticalRect.right() step 1f).forEach { x ->
-            val topTile = map.rectangleAt(x.toInt(), verticalRect.top().toInt())
-            if (topTile?.overlaps(verticalRect) == true) {
-                up = true
-                EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(verticalRect, topTile))
-            }
-            val bottomTile = map.rectangleAt(x.toInt(), verticalRect.bottom().toInt())
-            if (bottomTile?.overlaps(verticalRect) == true) {
-                down = true
-                EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(verticalRect, bottomTile))
+            if (velocity.movingUp) {
+                val topTile = map.rectangleAt(x.toInt(), verticalRect.top().toInt())
+                if (topTile?.overlaps(verticalRect) == true) {
+                    collidedVertically = true
+                    EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(verticalRect, topTile))
+                }
+            } else if (velocity.movingDown) {
+                val bottomTile = map.rectangleAt(x.toInt(), verticalRect.bottom().toInt())
+                if (bottomTile?.overlaps(verticalRect) == true) {
+                    collidedVertically = true
+                    EVENTS.notify(com.malcolmcrum.nucleardethrone.events.Collision(verticalRect, bottomTile))
+                }
             }
         }
-        return Collision(up, down, left, right)
+        return Collision(collidedHorizontally, collidedVertically)
     }
 }
 

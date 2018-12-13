@@ -8,6 +8,8 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
+import com.malcolmcrum.nucleardethrone.events.BulletImpact
+import com.malcolmcrum.nucleardethrone.events.EventListener
 
 const val BLOCKING: String = "BLOCKING"
 const val TOTAL_MAP_WIDTH = 1024
@@ -52,6 +54,12 @@ class DesertMap(private val level: Level) {
         addTrimmings()
         map.layers.add(blockingLayer)
         map.layers.add(trimmingLayer)
+
+        EVENTS.register(object: EventListener<BulletImpact> {
+            override fun handle(event: BulletImpact) {
+                blockingLayer.setCell(event.position.x.toInt(), event.position.y.toInt(), null)
+            }
+        })
     }
 
     private fun fillEntireMap() {
@@ -87,6 +95,7 @@ class DesertMap(private val level: Level) {
         }
     }
 
+    // TODO: Use this, not rectangleAt. It's cheaper and does the same
     fun tileAt(x: Int, y: Int): TiledMapTile? {
         return blockingLayer.getCell(x, y)?.tile
     }
