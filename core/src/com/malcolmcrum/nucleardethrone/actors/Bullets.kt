@@ -34,12 +34,17 @@ class BulletManager(private val checkCollision: (Collides, Vector2) -> Collision
     }
 
     fun draw(batch: Batch) {
+        val collidedBullets = mutableListOf<Bullet>()
         for (bullet in bullets) {
             bullet.update()
             bullet.draw(batch)
+            val collision = checkCollision(bullet, bullet.velocity)
+            if (collision.collided) {
+                val wall = collision.nearestCollision(bullet.position)
+                EVENTS.notify(BulletImpact(Vector2(wall.first.toFloat(), wall.second.toFloat())))
+                collidedBullets.add(bullet)
+            }
         }
-        val collidedBullets = bullets.filter { checkCollision(it, it.velocity).collided }
-        collidedBullets.forEach { EVENTS.notify(BulletImpact(it.position)) }
         bullets.removeAll(collidedBullets)
         drawDestroyedBullets(batch)
     }
@@ -51,7 +56,7 @@ class BulletManager(private val checkCollision: (Collides, Vector2) -> Collision
         shapeRenderer.projectionMatrix = batch.projectionMatrix
         shapeRenderer.color = Color.BLUE
         for (bullet in destroyedBullets) {
-            shapeRenderer.circle(bullet.x, bullet.y, 0.5f)
+            shapeRenderer.circle(bullet.x, bullet.y, 0.1f, 8)
         }
         shapeRenderer.end()
         batch.begin()

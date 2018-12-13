@@ -49,6 +49,7 @@ class Player(val position: Vector2, val collisionCheck: (Collides, Vector2) -> C
         weapon.draw(batch)
         crosshair.draw(batch)
     }
+
     private fun shoot(x: Float, y: Float) {
         val target = Vector2(position.x, position.y)
         val velocity = Vector2(x, y).sub(target).nor()

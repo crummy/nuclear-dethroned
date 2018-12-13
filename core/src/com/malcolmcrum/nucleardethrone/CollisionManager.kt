@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
-import com.malcolmcrum.nucleardethrone.events.Collided
+import com.malcolmcrum.nucleardethrone.events.CollidedWithWall
 import com.malcolmcrum.nucleardethrone.events.EventListener
 
 interface Collides {
@@ -22,61 +22,75 @@ interface Collides {
     }
 }
 
-data class Collision(val collidedHorizontally: Boolean, val collidedVertically: Boolean) {
+data class Collision(val collidedHorizontally: Boolean,
+                     val collidedVertically: Boolean,
+                     val collidedWalls: List<Pair<Int, Int>>) {
+
     val collided = collidedHorizontally || collidedVertically
 
     fun modify(velocity: Vector2) {
         if (collidedHorizontally) velocity.x = 0f
         if (collidedVertically) velocity.y = 0f
     }
+
+    fun nearestCollision(v: Vector2) = collidedWalls.sortedBy { v.dst2(it.first.toFloat(), it.second.toFloat()) }.first()
 }
 
 class CollisionManager(private val map: DesertMap) {
-    fun checkCollision(entity: Collides, velocity: Vector2): Collision {
+    fun checkWallCollision(entity: Collides, velocity: Vector2): Collision {
         val horizontalRect = entity.boundary.plus(Vector2(velocity.x, 0f))
         var collidedHorizontally = false
+        val collidedWalls = mutableListOf<Pair<Int, Int>>()
         (horizontalRect.bottom().toInt()..horizontalRect.top().toInt()).forEach { y ->
             if (velocity.movingRight) {
-                val rightTile = map.rectangleAt(horizontalRect.right().toInt(), y)
+                val x = horizontalRect.right().toInt()
+                val rightTile = map.rectangleAt(x, y)
                 if (rightTile?.overlaps(horizontalRect) == true) {
                     collidedHorizontally = true
-                    EVENTS.notify(Collided(horizontalRect, rightTile))
+                    collidedWalls.add(Pair(x, y))
+                    EVENTS.notify(CollidedWithWall(horizontalRect, rightTile))
                 }
             } else if (velocity.movingLeft) {
-                val leftTile = map.rectangleAt(horizontalRect.left().toInt(), y)
+                val x = horizontalRect.left().toInt()
+                val leftTile = map.rectangleAt(x, y)
                 if (leftTile?.overlaps(horizontalRect) == true) {
                     collidedHorizontally = true
-                    EVENTS.notify(Collided(horizontalRect, leftTile))
+                    collidedWalls.add(Pair(x, y))
+                    EVENTS.notify(CollidedWithWall(horizontalRect, leftTile))
                 }
             }
         }
         var collidedVertically = false
         val verticalRect = entity.boundary.plus(Vector2(0f, velocity.y))
-        (verticalRect.left()..verticalRect.right() step 1f).forEach { x ->
+        (verticalRect.left().toInt()..verticalRect.right().toInt()).forEach { x ->
             if (velocity.movingUp) {
-                val topTile = map.rectangleAt(x.toInt(), verticalRect.top().toInt())
+                val y = verticalRect.top().toInt()
+                val topTile = map.rectangleAt(x, y)
                 if (topTile?.overlaps(verticalRect) == true) {
                     collidedVertically = true
-                    EVENTS.notify(Collided(verticalRect, topTile))
+                    collidedWalls.add(Pair(x, y))
+                    EVENTS.notify(CollidedWithWall(verticalRect, topTile))
                 }
             } else if (velocity.movingDown) {
-                val bottomTile = map.rectangleAt(x.toInt(), verticalRect.bottom().toInt())
+                val y = verticalRect.bottom().toInt()
+                val bottomTile = map.rectangleAt(x, y)
                 if (bottomTile?.overlaps(verticalRect) == true) {
                     collidedVertically = true
-                    EVENTS.notify(Collided(verticalRect, bottomTile))
+                    collidedWalls.add(Pair(x, y))
+                    EVENTS.notify(CollidedWithWall(verticalRect, bottomTile))
                 }
             }
         }
-        return Collision(collidedHorizontally, collidedVertically)
+        return Collision(collidedHorizontally, collidedVertically, collidedWalls)
     }
 }
 
 class CollisionDebugger {
-    val collisions = mutableListOf<Collided>()
+    val collisions = mutableListOf<CollidedWithWall>()
 
     init {
-        EVENTS.register(object: EventListener<Collided> {
-            override fun handle(event: Collided) {
+        EVENTS.register(object: EventListener<CollidedWithWall> {
+            override fun handle(event: CollidedWithWall) {
                 collisions.add(event)
             }
         })
