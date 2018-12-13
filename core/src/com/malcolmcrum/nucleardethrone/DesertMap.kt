@@ -6,6 +6,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap
 import com.badlogic.gdx.maps.tiled.TiledMapTile
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
+import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 
 const val BLOCKING: String = "BLOCKING"
@@ -88,6 +89,10 @@ class DesertMap(private val level: Level) {
 
     fun tileAt(x: Int, y: Int): TiledMapTile? {
         return blockingLayer.getCell(x, y)?.tile
+    }
+
+    fun rectangleAt(x: Int, y: Int): Rectangle? {
+        return blockingLayer.getCell(x, y)?.let { Rectangle(x.toFloat(), y.toFloat(), 1f, 1f) }
     }
 
     fun availablePosition(): Vector2 {

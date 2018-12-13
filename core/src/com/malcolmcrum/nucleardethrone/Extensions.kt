@@ -25,3 +25,9 @@ fun Rectangle.bottom() = y
 fun Rectangle.top() = y + height
 fun Rectangle.left() = x
 fun Rectangle.right() = x + width
+
+fun Rectangle.scale(scale: Float): Rectangle {
+    val newWidth = width * scale
+    val newHeight = height * scale
+    return Rectangle(x - (width - newWidth), y - (height - newHeight), newWidth, newHeight)
+}

@@ -13,7 +13,7 @@ import com.malcolmcrum.nucleardethrone.events.*
 
 const val PLAYER_SPEED = 0.15f
 
-class Player(val position: Vector2, val collisionCheck: (Collides) -> Collision) : Collides {
+class Player(val position: Vector2, val collisionCheck: (Collides, Vector2) -> Collision) : Collides {
 
     val log = Log(Player::class)
     val sprite = Sprite(Texture("player.png"))
@@ -27,7 +27,7 @@ class Player(val position: Vector2, val collisionCheck: (Collides) -> Collision)
         EVENTS.register(object: EventListener<PlayerMovement> {
             override fun handle(event: PlayerMovement) {
                 val velocity = Vector2(event.x * PLAYER_SPEED, event.y * PLAYER_SPEED)
-                collisionCheck.invoke(player).modify(velocity)
+                collisionCheck.invoke(player, velocity).modify(velocity)
                 position.add(velocity)
                 EVENTS.notify(PlayerPositionUpdated(position.x, position.y))
             }

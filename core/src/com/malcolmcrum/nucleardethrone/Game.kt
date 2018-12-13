@@ -17,6 +17,7 @@ val EVENTS = EventManager()
 
 class Game : ApplicationAdapter() {
     val inputHandler = InputHandler()
+    val collisionDebugger = CollisionDebugger()
     lateinit var player: Player
     lateinit var camera: Camera
     lateinit var map: DesertMap
@@ -54,6 +55,9 @@ class Game : ApplicationAdapter() {
         enemies.forEach { it.draw(batch) }
         batch.end()
         mapRenderer.render(listOf(0).toIntArray()) // render blocking tiles
+        batch.begin()
+        collisionDebugger.draw(batch)
+        batch.end()
         camera.update()
     }
 
