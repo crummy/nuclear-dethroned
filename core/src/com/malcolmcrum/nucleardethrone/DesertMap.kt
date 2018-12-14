@@ -11,7 +11,6 @@ import com.badlogic.gdx.math.Vector2
 import com.malcolmcrum.nucleardethrone.events.BulletImpactWall
 import com.malcolmcrum.nucleardethrone.events.EventListener
 
-const val BLOCKING: String = "BLOCKING"
 const val TOTAL_MAP_WIDTH = 1024
 const val TOTAL_MAP_HEIGHT = 1024
 
@@ -23,21 +22,18 @@ class DesertMap(private val level: Level) {
     val topTrimCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
     val leftTrimCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
     val rightTrimCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
-    val blockingTexture = TextureRegion(texture, 8, 8, 8, 8)
-    val bottomTrimTexture = TextureRegion(texture, 8, 16, 8, 8)
-    val topTrimTexture = TextureRegion(texture, 8, 0, 8, 8)
-    val leftTrimTexture = TextureRegion(texture, 0, 8, 8, 8)
-    val rightTrimTexture = TextureRegion(texture, 16, 8, 8, 8)
-    val blockingTile = StaticTiledMapTile(blockingTexture)
-    val bottomTrimTile = StaticTiledMapTile(bottomTrimTexture)
-    val topTrimTile = StaticTiledMapTile(topTrimTexture)
-    val leftTrimTile = StaticTiledMapTile(leftTrimTexture)
-    val rightTrimTile = StaticTiledMapTile(rightTrimTexture)
+    val blockingTile = StaticTiledMapTile(TextureRegion(texture, 8, 8, 8, 8))
+    val bottomTrimTile = StaticTiledMapTile(TextureRegion(texture, 8, 16, 8, 8))
+    val topTrimTile = StaticTiledMapTile(TextureRegion(texture, 8, 0, 8, 8))
+    val leftTrimTile = StaticTiledMapTile(TextureRegion(texture, 0, 8, 8, 8))
+    val rightTrimTile = StaticTiledMapTile(TextureRegion(texture, 16, 8, 8, 8))
     val blockingLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
-    val trimmingLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
+    val leftTrimLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
+    val rightTrimLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
+    val bottomTrimLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
+    val topTrimLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
 
     init {
-        blockingTile.properties.put(BLOCKING, true)
         blockingTile.offsetY = 4f
         bottomTrimTile.offsetY = 4f
         topTrimTile.offsetY = 4f
@@ -53,12 +49,20 @@ class DesertMap(private val level: Level) {
         clearRooms()
         addTrimmings()
         map.layers.add(blockingLayer)
-        map.layers.add(trimmingLayer)
+        map.layers.add(rightTrimLayer)
+        map.layers.add(topTrimLayer)
+        map.layers.add(leftTrimLayer)
+        map.layers.add(bottomTrimLayer)
 
         EVENTS.register(object: EventListener<BulletImpactWall> {
             override fun handle(event: BulletImpactWall) {
                 blockingLayer.setCell(event.x, event.y, null)
-                addTrimmings()
+                for (x in (event.x - 1..event.x + 1)) {
+                    for (y in (event.y - 1..event.y + 1)) {
+                        addTrimmings(x, y)
+                    }
+                }
+
             }
         })
     }
@@ -86,16 +90,22 @@ class DesertMap(private val level: Level) {
     private fun addTrimmings() {
         (0..blockingLayer.width).forEach { x ->
             (0..blockingLayer.height).forEach { y ->
-                blockingLayer.getCell(x, y)?.let {
-                    if (blockingLayer.getCell(x - 1, y) == null) trimmingLayer.setCell(x - 1, y, leftTrimCell)
-                    if (blockingLayer.getCell(x + 1, y) == null) trimmingLayer.setCell(x + 1, y, rightTrimCell)
-                    if (blockingLayer.getCell(x, y - 1) == null) trimmingLayer.setCell(x, y - 1, bottomTrimCell)
-                    if (blockingLayer.getCell(x, y + 1) == null) trimmingLayer.setCell(x, y + 1, topTrimCell)
-                } ?: run {
-                    trimmingLayer.setCell(x, y, null)
+                if (blockingLayer.getCell(x, y) == null) {
+                    addTrimmings(x, y)
                 }
             }
         }
+    }
+
+    private fun addTrimmings(x: Int, y: Int) {
+        val rightCell = if (blockingLayer.getCell(x - 1, y) != null) rightTrimCell else null
+        val leftCell = if (blockingLayer.getCell(x + 1, y) != null) leftTrimCell else null
+        val bottomCell = if (blockingLayer.getCell(x, y + 1) != null) bottomTrimCell else null
+        val topCell = if (blockingLayer.getCell(x, y - 1) != null) topTrimCell else null
+        leftTrimLayer.setCell(x, y, leftCell)
+        rightTrimLayer.setCell(x, y, rightCell)
+        bottomTrimLayer.setCell(x, y, bottomCell)
+        topTrimLayer.setCell(x, y, topCell)
     }
 
     // TODO: Use this, not rectangleAt. It's cheaper and does the same
@@ -119,8 +129,4 @@ class DesertMap(private val level: Level) {
     }
 
     val playerStart: Vector2 = level.playerStart.add(TOTAL_MAP_WIDTH/2f - level.width/2f, TOTAL_MAP_HEIGHT/2f - level.height/2f)
-}
-
-fun TiledMapTile?.isBlocking(): Boolean {
-    return this != null && properties.get(BLOCKING) as? Boolean == true
 }

@@ -46,7 +46,7 @@ class Game : ApplicationAdapter() {
         Gdx.gl.glClearColor(170/255f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
         mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
-        mapRenderer.render(listOf(1).toIntArray()) // render walls
+        mapRenderer.render(listOf(1, 2, 3, 4).toIntArray()) // render walls
         val batch = SpriteBatch()
         batch.projectionMatrix = camera.viewport.camera.combined
         batch.begin()
