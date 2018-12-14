@@ -8,7 +8,7 @@ import com.badlogic.gdx.math.Vector2
 import com.malcolmcrum.nucleardethrone.events.CollidedWithWall
 import com.malcolmcrum.nucleardethrone.events.EventListener
 
-interface Collides {
+interface Collider {
     val boundary: Rectangle
     fun drawDebug(batch: Batch) {
         batch.end()
@@ -37,7 +37,7 @@ data class Collision(val collidedHorizontally: Boolean,
 }
 
 class CollisionManager(private val map: DesertMap) {
-    fun checkWallCollision(entity: Collides, velocity: Vector2): Collision {
+    fun checkWallCollision(entity: Collider, velocity: Vector2): Collision {
         val horizontalRect = entity.boundary.plus(Vector2(velocity.x, 0f))
         var collidedHorizontally = false
         val collidedWalls = mutableListOf<Pair<Int, Int>>()

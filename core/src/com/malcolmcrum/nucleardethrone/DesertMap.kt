@@ -8,7 +8,7 @@ import com.badlogic.gdx.maps.tiled.TiledMapTileLayer
 import com.badlogic.gdx.maps.tiled.tiles.StaticTiledMapTile
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
-import com.malcolmcrum.nucleardethrone.events.BulletImpact
+import com.malcolmcrum.nucleardethrone.events.BulletImpactWall
 import com.malcolmcrum.nucleardethrone.events.EventListener
 
 const val BLOCKING: String = "BLOCKING"
@@ -55,9 +55,9 @@ class DesertMap(private val level: Level) {
         map.layers.add(blockingLayer)
         map.layers.add(trimmingLayer)
 
-        EVENTS.register(object: EventListener<BulletImpact> {
-            override fun handle(event: BulletImpact) {
-                blockingLayer.setCell(event.position.x.toInt(), event.position.y.toInt(), null)
+        EVENTS.register(object: EventListener<BulletImpactWall> {
+            override fun handle(event: BulletImpactWall) {
+                blockingLayer.setCell(event.x, event.y, null)
             }
         })
     }

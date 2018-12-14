@@ -5,7 +5,7 @@ import com.badlogic.gdx.graphics.g2d.Batch
 import com.badlogic.gdx.graphics.g2d.Sprite
 import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
-import com.malcolmcrum.nucleardethrone.Collides
+import com.malcolmcrum.nucleardethrone.Collider
 import com.malcolmcrum.nucleardethrone.Collision
 import com.malcolmcrum.nucleardethrone.EVENTS
 import com.malcolmcrum.nucleardethrone.Log
@@ -13,7 +13,7 @@ import com.malcolmcrum.nucleardethrone.events.*
 
 const val PLAYER_SPEED = 0.15f
 
-class Player(val position: Vector2, val collisionCheck: (Collides, Vector2) -> Collision) : Collides {
+class Player(val position: Vector2, val collisionCheck: (Collider, Vector2) -> Collision) : Collider {
 
     val log = Log(Player::class)
     val sprite = Sprite(Texture("player.png"))
