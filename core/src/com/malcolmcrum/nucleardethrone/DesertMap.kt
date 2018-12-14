@@ -22,28 +22,32 @@ class DesertMap(private val level: Level) {
     val topTrimCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
     val leftTrimCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
     val rightTrimCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
+    val destroyedCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
     val blockingTile = StaticTiledMapTile(TextureRegion(texture, 8, 8, 8, 8))
     val bottomTrimTile = StaticTiledMapTile(TextureRegion(texture, 8, 16, 8, 8))
     val topTrimTile = StaticTiledMapTile(TextureRegion(texture, 8, 0, 8, 8))
     val leftTrimTile = StaticTiledMapTile(TextureRegion(texture, 0, 8, 8, 8))
     val rightTrimTile = StaticTiledMapTile(TextureRegion(texture, 16, 8, 8, 8))
+    val destroyedTile = StaticTiledMapTile(TextureRegion(texture, 0, 16, 8, 8))
     val blockingLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
     val leftTrimLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
     val rightTrimLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
     val bottomTrimLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
     val topTrimLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
+    val destroyedTilesLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
 
     init {
         blockingTile.offsetY = 4f
         bottomTrimTile.offsetY = 4f
         topTrimTile.offsetY = 4f
-        rightTrimTile.offsetY = 4f
+        destroyedTile.offsetY = 4f
         leftTrimTile.offsetY = 4f
         blockingCell.tile = blockingTile
         bottomTrimCell.tile = bottomTrimTile
         topTrimCell.tile = topTrimTile
         leftTrimCell.tile = leftTrimTile
         rightTrimCell.tile = rightTrimTile
+        destroyedCell.tile = destroyedTile
 
         fillEntireMap()
         clearRooms()
@@ -53,10 +57,12 @@ class DesertMap(private val level: Level) {
         map.layers.add(topTrimLayer)
         map.layers.add(leftTrimLayer)
         map.layers.add(bottomTrimLayer)
+        map.layers.add(destroyedTilesLayer)
 
         EVENTS.register(object: EventListener<BulletImpactWall> {
             override fun handle(event: BulletImpactWall) {
                 blockingLayer.setCell(event.x, event.y, null)
+                destroyedTilesLayer.setCell(event.x, event.y, destroyedCell)
                 for (x in (event.x - 1..event.x + 1)) {
                     for (y in (event.y - 1..event.y + 1)) {
                         addTrimmings(x, y)
