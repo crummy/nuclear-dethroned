@@ -38,11 +38,11 @@ class DesertMap(private val level: Level) {
 
     init {
         blockingTile.properties.put(BLOCKING, true)
-        blockingTile.offsetY = 0.5f
-        bottomTrimTile.offsetY = 0.5f
-        topTrimTile.offsetY = 0.5f
-        rightTrimTile.offsetY = 0.5f
-        leftTrimTile.offsetY = 0.5f
+        blockingTile.offsetY = 4f
+        bottomTrimTile.offsetY = 4f
+        topTrimTile.offsetY = 4f
+        rightTrimTile.offsetY = 4f
+        leftTrimTile.offsetY = 4f
         blockingCell.tile = blockingTile
         bottomTrimCell.tile = bottomTrimTile
         topTrimCell.tile = topTrimTile

@@ -16,6 +16,7 @@ data class Level(val playerStart: Vector2, val walls: List<List<Boolean>>) {
     }
 }
 
+// TODO: This should take entire world width/height into account, not DesertMap IMO
 class LevelGenerator(val levelWidth: Int,
                      val levelHeight: Int) {
 
