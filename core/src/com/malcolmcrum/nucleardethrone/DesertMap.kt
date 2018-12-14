@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Rectangle
 import com.badlogic.gdx.math.Vector2
 import com.malcolmcrum.nucleardethrone.events.BulletImpactWall
 import com.malcolmcrum.nucleardethrone.events.EventListener
+import kotlin.random.Random
 
 const val TOTAL_MAP_WIDTH = 1024
 const val TOTAL_MAP_HEIGHT = 1024
@@ -17,24 +18,33 @@ const val TOTAL_MAP_HEIGHT = 1024
 class DesertMap(private val level: Level) {
     val map: TiledMap = TiledMap()
     val texture = Texture("tile.png")
+
     val blockingCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
     val bottomTrimCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
     val topTrimCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
     val leftTrimCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
     val rightTrimCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
     val destroyedCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
+    val garbageCell: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
+    val garbageCell2: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
+    val garbageCell3: TiledMapTileLayer.Cell = TiledMapTileLayer.Cell()
+
     val blockingTile = StaticTiledMapTile(TextureRegion(texture, 8, 8, 8, 8))
     val bottomTrimTile = StaticTiledMapTile(TextureRegion(texture, 8, 16, 8, 8))
     val topTrimTile = StaticTiledMapTile(TextureRegion(texture, 8, 0, 8, 8))
     val leftTrimTile = StaticTiledMapTile(TextureRegion(texture, 0, 8, 8, 8))
     val rightTrimTile = StaticTiledMapTile(TextureRegion(texture, 16, 8, 8, 8))
     val destroyedTile = StaticTiledMapTile(TextureRegion(texture, 0, 16, 8, 8))
+    val garbageTile = StaticTiledMapTile(TextureRegion(texture, 0, 0, 8, 8))
+    val garbageTile2 = StaticTiledMapTile(TextureRegion(texture, 16, 0, 8, 8))
+    val garbageTile3 = StaticTiledMapTile(TextureRegion(texture, 16, 16, 8, 8))
+
     val blockingLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
     val leftTrimLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
     val rightTrimLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
     val bottomTrimLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
     val topTrimLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
-    val destroyedTilesLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
+    val floorLayer = TiledMapTileLayer(TOTAL_MAP_WIDTH, TOTAL_MAP_HEIGHT, 8, 8)
 
     init {
         blockingTile.offsetY = 4f
@@ -48,6 +58,9 @@ class DesertMap(private val level: Level) {
         leftTrimCell.tile = leftTrimTile
         rightTrimCell.tile = rightTrimTile
         destroyedCell.tile = destroyedTile
+        garbageCell.tile = garbageTile
+        garbageCell2.tile = garbageTile2
+        garbageCell3.tile = garbageTile3
 
         fillEntireMap()
         clearRooms()
@@ -57,12 +70,12 @@ class DesertMap(private val level: Level) {
         map.layers.add(topTrimLayer)
         map.layers.add(leftTrimLayer)
         map.layers.add(bottomTrimLayer)
-        map.layers.add(destroyedTilesLayer)
+        map.layers.add(floorLayer)
 
         EVENTS.register(object: EventListener<BulletImpactWall> {
             override fun handle(event: BulletImpactWall) {
                 blockingLayer.setCell(event.x, event.y, null)
-                destroyedTilesLayer.setCell(event.x, event.y, destroyedCell)
+                floorLayer.setCell(event.x, event.y, destroyedCell)
                 for (x in (event.x - 1..event.x + 1)) {
                     for (y in (event.y - 1..event.y + 1)) {
                         addTrimmings(x, y)
@@ -88,6 +101,13 @@ class DesertMap(private val level: Level) {
                     val cellX = TOTAL_MAP_WIDTH/2 - level.width/2 + x
                     val cellY = TOTAL_MAP_HEIGHT/2 - level.height/2 + y
                     blockingLayer.setCell(cellX, cellY, null)
+
+                    val random = Random.nextInt(100)
+                    when {
+                        random < 5 -> floorLayer.setCell(cellX, cellY, garbageCell)
+                        random < 10 -> floorLayer.setCell(cellX, cellY, garbageCell2)
+                        random < 15 -> floorLayer.setCell(cellX, cellY, garbageCell3)
+                    }
                 }
             }
         }
