@@ -58,6 +58,7 @@ class DesertMap(private val level: Level) {
         EVENTS.register(object: EventListener<BulletImpactWall> {
             override fun handle(event: BulletImpactWall) {
                 blockingLayer.setCell(event.x, event.y, null)
+                addTrimmings()
             }
         })
     }
@@ -90,6 +91,8 @@ class DesertMap(private val level: Level) {
                     if (blockingLayer.getCell(x + 1, y) == null) trimmingLayer.setCell(x + 1, y, rightTrimCell)
                     if (blockingLayer.getCell(x, y - 1) == null) trimmingLayer.setCell(x, y - 1, bottomTrimCell)
                     if (blockingLayer.getCell(x, y + 1) == null) trimmingLayer.setCell(x, y + 1, topTrimCell)
+                } ?: run {
+                    trimmingLayer.setCell(x, y, null)
                 }
             }
         }
