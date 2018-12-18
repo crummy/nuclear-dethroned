@@ -11,6 +11,7 @@ import com.malcolmcrum.nucleardethrone.actors.Bandit
 import com.malcolmcrum.nucleardethrone.actors.BulletManager
 import com.malcolmcrum.nucleardethrone.actors.Camera
 import com.malcolmcrum.nucleardethrone.actors.Player
+import com.malcolmcrum.nucleardethrone.ai.AIDirector
 import com.malcolmcrum.nucleardethrone.events.EventManager
 
 val EVENTS = EventManager()
@@ -24,6 +25,7 @@ class Game : ApplicationAdapter() {
     lateinit var mapRenderer: MapRenderer
     lateinit var bulletManager: BulletManager
     val enemies = mutableListOf<Bandit>()
+    lateinit var aiDirector: AIDirector
 
     override fun create() {
         val level = LevelGenerator(64, 64).generate()
@@ -37,11 +39,13 @@ class Game : ApplicationAdapter() {
         bulletManager = BulletManager(collisionManager::checkWallCollision)
         mapRenderer = OrthogonalTiledMapRenderer(map.map, 1/8f)
         mapRenderer.setView(camera.viewport.camera as OrthographicCamera)
+        aiDirector = AIDirector(enemies, map) { player.position }
         Gdx.input.isCursorCatched = true
     }
 
     override fun render() {
         inputHandler.handle(camera.viewport.camera)
+        aiDirector.update()
         enemies.forEach(Bandit::update)
         Gdx.gl.glClearColor(170/255f, 0f, 0f, 1f)
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)

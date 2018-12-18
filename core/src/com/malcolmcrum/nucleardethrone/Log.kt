@@ -5,11 +5,15 @@ import kotlin.reflect.KClass
 
 
 class Log(private val clazz: KClass<*>) {
+    val debug = false
+
     fun info(message: String) {
         Gdx.app.log("INFO ${clazz::java}", message)
     }
 
     fun debug(message: String) {
-        Gdx.app.log("DEBUG ${clazz::java}", message)
+        if (debug) {
+            Gdx.app.log("DEBUG ${clazz::java}", message)
+        }
     }
 }
